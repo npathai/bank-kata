@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+    id 'groovy'
+}
+
+group 'org.npathai'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.6.0")
+    testImplementation('org.spockframework:spock-core:2.0-M3-groovy-3.0')
+    
+    testRuntime("org.junit.platform:junit-platform-launcher:1.6.0")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.0")
+    testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.6.0'
+
+
+    // https://mvnrepository.com/artifact/org.mockito/mockito-all
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
+    testCompile group: 'pl.pragmatists', name: 'JUnitParams', version: '1.1.0'
+    // https://mvnrepository.com/artifact/org.assertj/assertj-core
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
+
+}
+
+test {
+    useJUnitPlatform()
+    systemProperties = [
+            'junit.jupiter.execution.parallel.enabled' : 'true',
+            'junit.jupiter.execution.parallel.mode.default' : 'concurrent',
+            'junit.jupiter.execution.parallel.mode.classes.default' : 'concurrent'
+    ]
+}
