@@ -1,15 +1,17 @@
 package intrastructure;
 
 import org.npathai.BankApplication;
+import org.npathai.CommandExecutor;
 import org.npathai.Console;
 
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 public class Fixture {
     BlockingTestingConsole console = new BlockingTestingConsole();
-    BankApplication bankApplication = new BankApplication(console);
+    BankApplication bankApplication = new BankApplication(console, Executors.newSingleThreadExecutor(), new CommandExecutor());
 
     public Fixture() {
         bankApplication.start();

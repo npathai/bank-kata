@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat
 class BankSpecification extends Specification {
 
     Console console = new TestingConsole()
-    BankApplication bankApplication = new BankApplication(console)
+    BankApplication bankApplication = new BankApplication(console, java.util.concurrent.Executors.newSingleThreadExecutor(), new org.npathai.CommandExecutor())
 
     def user(name) {
         return new UserDSL(name)

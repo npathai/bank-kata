@@ -1,22 +1,30 @@
 package org.npathai;
 
 import java.util.*;
+import java.util.concurrent.Executor;
 
 public class BankApplication {
     private final Console console;
+    private final Executor executorService;
+    private final CommandExecutor commandExecutor;
     private Map<String, Account> accountByAccountNo = new HashMap<>();
 
-    public BankApplication(Console  console) {
+    public BankApplication(Console console, Executor executorService, CommandExecutor commandExecutor) {
         this.console = console;
+        this.executorService = executorService;
+        this.commandExecutor = commandExecutor;
     }
 
     public void start() {
-        new Thread(() -> {
+        executorService.execute(() -> {
             String command;
             while (!(command = console.readLine()).equals("q")) {
-                processCommand(command);
+                List<String> outputLines = commandExecutor.executeCommand(command);
+                for (String outputLine : outputLines) {
+                    console.write(outputLine);
+                }
             }
-        }).start();
+        });
     }
 
     private void processCommand(String command) {
