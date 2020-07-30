@@ -1,0 +1,56 @@
+package intrastructure;
+
+import org.npathai.BankApplication;
+import org.npathai.Console;
+
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
+
+public class Fixture {
+    BlockingTestingConsole console = new BlockingTestingConsole();
+    BankApplication bankApplication = new BankApplication(console);
+
+    public Fixture() {
+        bankApplication.start();
+    }
+
+    public void willReceive(String command) {
+        console.enqueueCommand(command);
+    }
+
+    public String readOutput() {
+        return console.dequeueOutput();
+    }
+
+    class BlockingTestingConsole extends Console {
+        BlockingDeque<String> commands = new LinkedBlockingDeque<>();
+        BlockingDeque<String> output = new LinkedBlockingDeque<>();
+
+        @Override
+        public String readLine() {
+            try {
+                return commands.pollFirst(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Console Read timeout");
+            }
+        }
+
+        @Override
+        public void write(String input) {
+            output.offer(input);
+        }
+
+        void enqueueCommand(String command) {
+            commands.offerLast(command);
+        }
+
+        String dequeueOutput() {
+            try {
+                return output.pollFirst(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Timeout waiting for output being written to console");
+            }
+        }
+    }
+}
