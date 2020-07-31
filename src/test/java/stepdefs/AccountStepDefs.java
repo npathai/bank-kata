@@ -1,6 +1,7 @@
 package stepdefs;
 
 import intrastructure.Fixture;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -23,13 +24,6 @@ public class AccountStepDefs {
         System.out.println("Created account " + accountNo);
     }
 
-    @When("She makes a few transactions")
-    public void makes_transactions() {
-        application.willReceive(accountNo + " deposit 1000");
-        application.willReceive(accountNo + " deposit 500");
-        application.willReceive(accountNo + " withdraw 100");
-    }
-
     @Then("She can see account statement containing all the transactions")
     public void verify_can_see_account_statement() {
         application.willReceive(accountNo + " statement");
@@ -39,4 +33,13 @@ public class AccountStepDefs {
         assertThat(application.readOutput()).isEqualTo("D||100");
     }
 
+    @When("She deposits Rs {int} to her account")
+    public void sheDepositsRsToHerAccount(int amount) {
+        application.willReceive(accountNo + " deposit " + amount);
+    }
+
+    @And("She withdraws Rs {int} from her account")
+    public void sheWithdrawsRsFromHerAccount(int amount) {
+        application.willReceive(accountNo + " withdraw " + amount);
+    }
 }

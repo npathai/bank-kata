@@ -36,7 +36,7 @@ class BankApplicationTest {
     @Test
     public void startsProcessingCommandsAsynchronously() {
         Executor mockExecutor = Mockito.mock(Executor.class);
-        bankApplication = new BankApplication(mockConsole, mockExecutor, new CommandExecutor());
+        bankApplication = new BankApplication(mockConsole, mockExecutor, new CommandExecutor(null));
         given(mockConsole.readLine()).willReturn(QUIT);
 
         bankApplication.start();
