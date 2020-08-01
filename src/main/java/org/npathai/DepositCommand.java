@@ -8,7 +8,7 @@ public class DepositCommand implements Command {
     }
 
     @Override
-    public List<String> execute(String command) {
+    public List<String> execute() {
         return null;
     }
 }

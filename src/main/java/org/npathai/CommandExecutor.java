@@ -16,6 +16,6 @@ public class CommandExecutor {
         if (command == null) {
             return Collections.emptyList();
         }
-        return command.execute(commandStr);
+        return command.execute();
     }
 }
