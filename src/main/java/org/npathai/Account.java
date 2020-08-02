@@ -28,13 +28,4 @@ public class Account {
         return accountNo;
     }
 
-    class AccountTransaction {
-        String type;
-        long amount;
-
-        public AccountTransaction(String type, long amount) {
-            this.type = type;
-            this.amount = amount;
-        }
-    }
 }

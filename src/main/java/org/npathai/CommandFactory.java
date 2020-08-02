@@ -9,7 +9,7 @@ public class CommandFactory {
         } else if (command.contains(" withdraw ")) {
             return new WithdrawCommand(command, new AccountService());
         } else if (command.endsWith("statement")) {
-            return new ShowStatementCommand(command);
+            return new ShowStatementCommand(command, new AccountService());
         } else {
             throw new UnsupportedOperationException();
         }

@@ -24,7 +24,7 @@ class DepositCommandTest {
     }
 
     @Test
-    public void withdrawsAmountFromAccount() {
+    public void depositsAmountToAccount() {
         depositCommand.execute();
 
         verify(accountService).depositAccount(ACCOUNT.accountNo(), 1000);

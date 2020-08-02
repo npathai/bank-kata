@@ -1,5 +1,7 @@
 package org.npathai;
 
+import java.util.List;
+
 public class AccountService {
     public Account createAccount(String accountHolderName) {
         return null;
@@ -11,5 +13,9 @@ public class AccountService {
 
     public void depositAccount(String accountNo, int amount) {
 
+    }
+
+    public List<AccountTransaction> getStatement(String accountNo) {
+        return null;
     }
 }
