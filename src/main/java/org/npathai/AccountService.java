@@ -8,4 +8,8 @@ public class AccountService {
     public void withdrawAccount(String accountNo, int amount) {
 
     }
+
+    public void depositAccount(String accountNo, int amount) {
+
+    }
 }
