@@ -6,7 +6,6 @@ import java.util.UUID;
 
 public class Account {
     private String accountNo = UUID.randomUUID().toString();
-    private long balance;
     private final String accountHolderName;
     private List<AccountTransaction> transactionList = new ArrayList<>();
 
@@ -15,12 +14,10 @@ public class Account {
     }
 
     public void deposit(long amount) {
-        balance += amount;
         transactionList.add(new AccountTransaction("C", amount));
     }
 
     public void withdraw(int amount) {
-        balance -= amount;
         transactionList.add(new AccountTransaction("D", amount));
     }
 
@@ -28,4 +25,11 @@ public class Account {
         return accountNo;
     }
 
+    public String accountHolderName() {
+        return accountHolderName;
+    }
+
+    public List<AccountTransaction> transactions() {
+        return transactionList;
+    }
 }
