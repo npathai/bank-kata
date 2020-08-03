@@ -1,6 +1,7 @@
 package org.npathai;
 
 import java.util.List;
+import java.util.Objects;
 
 public class OpenAccountCommand implements Command {
 
@@ -8,8 +9,8 @@ public class OpenAccountCommand implements Command {
     private final AccountService accountService;
 
     public OpenAccountCommand(String command, AccountService accountService) {
-        this.command = command;
-        this.accountService = accountService;
+        this.command = Objects.requireNonNull(command);
+        this.accountService = Objects.requireNonNull(accountService);
     }
 
     @Override

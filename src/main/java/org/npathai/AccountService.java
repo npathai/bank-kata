@@ -18,7 +18,7 @@ public class AccountService {
     }
 
     public void depositAccount(String accountNo, int amount) {
-        accountByAccountNo.get(accountNo).deposit(1000);
+        accountByAccountNo.get(accountNo).deposit(amount);
     }
 
     public List<AccountTransaction> getStatement(String accountNo) {

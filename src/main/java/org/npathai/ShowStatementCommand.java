@@ -2,6 +2,7 @@ package org.npathai;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ShowStatementCommand implements Command {
 
@@ -9,8 +10,8 @@ public class ShowStatementCommand implements Command {
     private final AccountService accountService;
 
     public ShowStatementCommand(String command, AccountService accountService) {
-        this.command = command;
-        this.accountService = accountService;
+        this.command = Objects.requireNonNull(command);
+        this.accountService = Objects.requireNonNull(accountService);
     }
 
     @Override

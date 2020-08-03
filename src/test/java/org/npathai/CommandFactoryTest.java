@@ -2,6 +2,8 @@ package org.npathai;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.UUID;
 
@@ -14,11 +16,15 @@ class CommandFactoryTest {
     static final String DEPOSIT_COMMAND = ACCOUNT_NO + " deposit 1000";
     static final String SHOW_STATEMENT_COMMAND = ACCOUNT_NO + " statement";
 
+    @Mock
+    AccountService accountService;
+
     CommandFactory commandFactory;
 
     @BeforeEach
     public void initialize() {
-        commandFactory = new CommandFactory();
+        MockitoAnnotations.initMocks(this);
+        commandFactory = new CommandFactory(accountService);
     }
     
     @Test

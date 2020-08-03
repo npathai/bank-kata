@@ -2,14 +2,15 @@ package org.npathai;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class WithdrawCommand implements Command {
     private final String command;
     private final AccountService accountService;
 
     public WithdrawCommand(String command, AccountService accountService) {
-        this.command = command;
-        this.accountService = accountService;
+        this.command = Objects.requireNonNull(command);
+        this.accountService = Objects.requireNonNull(accountService);
     }
 
     @Override
