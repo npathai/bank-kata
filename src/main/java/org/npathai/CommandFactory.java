@@ -20,7 +20,7 @@ public class CommandFactory {
         } else if (command.startsWith("transfer")) {
             return new TransferCommand(command, accountService);
         } else if (command.startsWith("close ")) {
-            return new CloseCommand();
+            return new CloseCommand(command, accountService);
         } else {
             throw new UnsupportedOperationException();
         }

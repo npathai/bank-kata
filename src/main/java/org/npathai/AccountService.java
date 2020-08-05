@@ -31,4 +31,8 @@ public class AccountService {
         fromAccount.withdraw(amount);
         toAccount.deposit(amount);
     }
+
+    public void close(String accountNo) {
+
+    }
 }
