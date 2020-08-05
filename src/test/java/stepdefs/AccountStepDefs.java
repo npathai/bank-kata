@@ -84,4 +84,18 @@ public class AccountStepDefs {
         String lastTransaction = getLastTransactionFromStatement(application.readOutput());
         assertThat(lastTransaction).isEqualTo("C||" + amount);
     }
+
+    @When("{string} closes her account")
+    public void closesHerAccount(String accountHolderName) {
+        application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " close");
+        assertThat(application.readOutput()).isEqualTo("Account closed");
+    }
+
+    @Then("{string} cannot make any further transactions from account")
+    public void cannotMakeAnyFurtherTransactionsFromAccount(String accountHolderName) {
+        userWithdrawsFromAccount(accountHolderName, 1);
+        assertThat(application.readOutput()).isEqualTo("Account is closed, cannot make any transaction");
+        userDepositsToAccount(accountHolderName, 1);
+        assertThat(application.readOutput()).isEqualTo("Account is closed, cannot make any transaction");
+    }
 }
