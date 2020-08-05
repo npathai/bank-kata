@@ -49,4 +49,25 @@ class AccountServiceTest {
                     .isEqualTo(List.of(new AccountTransaction("D", 1000)));
         }
     }
+
+    @Nested
+    class TransferAmount {
+        private Account sourceAccount;
+        private Account destinationAccount;
+
+        @BeforeEach
+        public void initialize() {
+            sourceAccount = accountService.createAccount("Alice");
+            destinationAccount = accountService.createAccount("Bob");
+        }
+
+        @Test
+        public void transferringAmountWithdrawsTheAmountFromSourceAccountAndDepositsToDestinationAccount() {
+            accountService.depositAccount(sourceAccount.accountNo(), 1000);
+            accountService.transfer(sourceAccount.accountNo(), destinationAccount.accountNo(), 1000);
+
+            assertThat(sourceAccount.transactions()).contains(new AccountTransaction("D", 1000));
+            assertThat(destinationAccount.transactions()).containsExactly(new AccountTransaction("C", 1000));
+        }
+    }
 }

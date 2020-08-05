@@ -17,6 +17,8 @@ public class CommandFactory {
             return new WithdrawCommand(command, accountService);
         } else if (command.endsWith("statement")) {
             return new ShowStatementCommand(command, accountService);
+        } else if (command.contains(" transfer ")) {
+            return new TransferCommand(command, accountService);
         } else {
             throw new UnsupportedOperationException();
         }

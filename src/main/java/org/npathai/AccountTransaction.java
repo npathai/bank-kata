@@ -24,4 +24,12 @@ public class AccountTransaction {
     public int hashCode() {
         return Objects.hash(type, amount);
     }
+
+    @Override
+    public String toString() {
+        return "AccountTransaction{" +
+                "type='" + type + '\'' +
+                ", amount=" + amount +
+                '}';
+    }
 }

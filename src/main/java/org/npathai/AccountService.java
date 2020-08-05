@@ -24,4 +24,11 @@ public class AccountService {
     public List<AccountTransaction> getStatement(String accountNo) {
         return accountByAccountNo.get(accountNo).transactions();
     }
+
+    public void transfer(String fromAccountNo, String toAccountNo, int amount) {
+        Account fromAccount = accountByAccountNo.get(fromAccountNo);
+        Account toAccount = accountByAccountNo.get(toAccountNo);
+        fromAccount.withdraw(amount);
+        toAccount.deposit(amount);
+    }
 }
