@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 class WithdrawCommandTest {
@@ -30,7 +31,14 @@ class WithdrawCommandTest {
     }
 
     @Test
-    public void doesNotReturnAnyValue() {
+    public void doesNotReturnAnyValueOnSuccessfulWithdrawal() {
         assertThat(withdrawCommand.execute()).isEmpty();
+    }
+
+    @Test
+    public void returnsClosureMessageWhenTriedToDepositAccountAfterClosingAccount() {
+        doThrow(AccountClosedException.class).when(accountService).withdrawAccount(ACCOUNT.accountNo(), 1000);
+
+        assertThat(withdrawCommand.execute()).contains("Account is closed, cannot make any transaction");
     }
 }

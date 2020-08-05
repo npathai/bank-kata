@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AccountServiceTest {
     AccountService accountService;
@@ -68,6 +69,31 @@ class AccountServiceTest {
 
             assertThat(sourceAccount.transactions()).contains(new AccountTransaction("D", 1000));
             assertThat(destinationAccount.transactions()).containsExactly(new AccountTransaction("C", 1000));
+        }
+    }
+
+    @Nested
+    public class CloseAccount {
+
+        private Account sourceAccount;
+
+        @BeforeEach
+        public void initialize() {
+            sourceAccount = accountService.createAccount("Alice");
+        }
+
+        @Test
+        public void cannotWithdrawAmountAfterClosingTheAccount() {
+            accountService.close(sourceAccount.accountNo());
+            assertThatThrownBy(() -> accountService.withdrawAccount(sourceAccount.accountNo(), 1))
+                    .isInstanceOf(AccountClosedException.class);
+        }
+
+        @Test
+        public void cannotDepositAmountAfterClosingTheAccount() {
+            accountService.close(sourceAccount.accountNo());
+            assertThatThrownBy(() -> accountService.depositAccount(sourceAccount.accountNo(), 1))
+                    .isInstanceOf(AccountClosedException.class);
         }
     }
 }

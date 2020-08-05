@@ -33,6 +33,6 @@ public class AccountService {
     }
 
     public void close(String accountNo) {
-
+        accountByAccountNo.get(accountNo).close();
     }
 }

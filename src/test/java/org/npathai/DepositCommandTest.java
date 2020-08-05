@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 class DepositCommandTest {
 
@@ -31,8 +33,14 @@ class DepositCommandTest {
     }
 
     @Test
-    public void doesNotReturnAnyValue() {
+    public void doesNotReturnAnyValueOnSuccessfulDeposit() {
         assertThat(depositCommand.execute()).isEmpty();
     }
 
+    @Test
+    public void returnsClosureMessageWhenTriedToDepositAccountAfterClosingAccount() {
+        doThrow(AccountClosedException.class).when(accountService).depositAccount(ACCOUNT.accountNo(), 1000);
+
+        assertThat(depositCommand.execute()).contains("Account is closed, cannot make any transaction");
+    }
 }

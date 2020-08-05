@@ -87,7 +87,7 @@ public class AccountStepDefs {
 
     @When("{string} closes her account")
     public void closesHerAccount(String accountHolderName) {
-        application.willReceive(accountNoByAccountHolderName.get("close " + accountHolderName));
+        application.willReceive("close " + accountNoByAccountHolderName.get(accountHolderName));
         assertThat(application.readOutput()).isEqualTo("Account closed");
     }
 
