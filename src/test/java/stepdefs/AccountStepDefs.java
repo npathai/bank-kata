@@ -1,5 +1,8 @@
 package stepdefs;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import intrastructure.Fixture;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -7,6 +10,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,10 +40,13 @@ public class AccountStepDefs {
     @Then("{string} can see account statement containing all the transactions \\(in order they occurred)")
     public void verify_can_see_account_statement(String accountHolderName) {
         application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " statement");
-        assertThat(application.readOutput()).isEqualTo("type||amount");
-        assertThat(application.readOutput()).isEqualTo("C||1000");
-        assertThat(application.readOutput()).isEqualTo("C||500");
-        assertThat(application.readOutput()).isEqualTo("D||100");
+        String statement = Joiner.on(System.lineSeparator()).join(List.of(
+                "type||amount",
+                "C||1000",
+                "C||500",
+                "D||100"
+        ));
+        assertThat(application.readOutput()).isEqualTo(statement);
     }
 
     @When("{string} deposits Rs {int} to her account")
@@ -62,14 +69,19 @@ public class AccountStepDefs {
     @Then("{string} should see a withdrawal of Rs {int} in account")
     public void shouldSeeAWithdrawalOfInAccount(String accountHolderName, int amount) {
         application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " statement");
-        assertThat(application.readOutput()).isEqualTo("type||amount");
-        assertThat(application.readOutput()).isEqualTo("D||" + amount);
+        String lastTransaction = getLastTransactionFromStatement(application.readOutput());
+        assertThat(lastTransaction).isEqualTo("D||" + amount);
+    }
+
+    private String getLastTransactionFromStatement(String output) {
+        Iterable<String> statementParts = Splitter.on(System.lineSeparator()).split(output);
+        return Iterables.getLast(statementParts);
     }
 
     @And("{string} should see a credit of Rs {int} in account")
     public void shouldSeeACreditOfInAccount(String accountHolderName, int amount) {
         application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " statement");
-        assertThat(application.readOutput()).isEqualTo("type||amount");
-        assertThat(application.readOutput()).isEqualTo("C||" + amount);
+        String lastTransaction = getLastTransactionFromStatement(application.readOutput());
+        assertThat(lastTransaction).isEqualTo("C||" + amount);
     }
 }

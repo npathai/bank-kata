@@ -4,13 +4,17 @@ import com.google.common.util.concurrent.MoreExecutors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.mockito.verification.VerificationMode;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 class BankApplicationTest {
     private static final String QUIT = "q";
@@ -59,14 +63,22 @@ class BankApplicationTest {
     }
 
     @Test
-    public void writesTheOutputProducedByCommandToConsole() {
+    public void writesTheOutputProducedByCommandToConsoleAsASingleLineSeparatedByNewLine() {
         given(mockConsole.readLine()).willReturn(COMMAND_1, QUIT);
         given(commandExecutor.executeCommand(COMMAND_1)).willReturn(List.of("Output Value 1", "Output Value 2"));
 
         bankApplication.start();
 
-        InOrder inOrder = Mockito.inOrder(mockConsole);
-        inOrder.verify(mockConsole).write("Output Value 1");
-        inOrder.verify(mockConsole).write("Output Value 2");
+        then(mockConsole).should().write("Output Value 1" + System.lineSeparator() + "Output Value 2");
+    }
+
+    @Test
+    public void doesNotWriteAnythingToConsoleWhenCommandDoesntReturnAnyOutput() {
+        given(mockConsole.readLine()).willReturn(COMMAND_1, QUIT);
+        given(commandExecutor.executeCommand(COMMAND_1)).willReturn(Collections.emptyList());
+
+        bankApplication.start();
+
+        verify(mockConsole, never()).write(anyString());
     }
 }
