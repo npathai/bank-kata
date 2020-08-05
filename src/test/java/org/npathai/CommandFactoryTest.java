@@ -15,7 +15,8 @@ class CommandFactoryTest {
     static final String WITHDRAW_COMMAND = ACCOUNT_NO + " withdraw 1000";
     static final String DEPOSIT_COMMAND = ACCOUNT_NO + " deposit 1000";
     static final String SHOW_STATEMENT_COMMAND = ACCOUNT_NO + " statement";
-    private static final String TRANSFER_COMMAND = "transfer " + ACCOUNT_NO + " " + UUID.randomUUID().toString() + " 1000";
+    static final String TRANSFER_COMMAND = "transfer " + ACCOUNT_NO + " " + UUID.randomUUID().toString() + " 1000";
+    static final String CLOSE_COMMAND = "close " + ACCOUNT_NO;
 
     @Mock
     AccountService accountService;
@@ -51,5 +52,10 @@ class CommandFactoryTest {
     @Test
     public void returnsTransferCommand() {
         assertThat(commandFactory.createCommand(TRANSFER_COMMAND)).isInstanceOf(TransferCommand.class);
+    }
+
+    @Test
+    public void returnsCloseAccountCommand() {
+        assertThat(commandFactory.createCommand(CLOSE_COMMAND)).isInstanceOf(CloseCommand.class);
     }
 }

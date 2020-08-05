@@ -19,6 +19,8 @@ public class CommandFactory {
             return new ShowStatementCommand(command, accountService);
         } else if (command.startsWith("transfer")) {
             return new TransferCommand(command, accountService);
+        } else if (command.startsWith("close ")) {
+            return new CloseCommand();
         } else {
             throw new UnsupportedOperationException();
         }
