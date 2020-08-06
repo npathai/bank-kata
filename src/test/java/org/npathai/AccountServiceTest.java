@@ -19,7 +19,8 @@ class AccountServiceTest {
 
     @Test
     public void returnsNewlyCreatedAccount() {
-        Account account = accountService.createAccount("Alice");
+        CreateAccountRequest createAccountRequest = new CreateAccountRequest("Alice");
+        Account account = accountService.createAccount(createAccountRequest);
         assertThat(account.accountHolderName()).isEqualTo("Alice");
         assertThat(account.transactions()).isEmpty();
     }
@@ -31,7 +32,7 @@ class AccountServiceTest {
 
         @BeforeEach
         public void initialize() {
-            account = accountService.createAccount("Alice");
+            account = accountService.createAccount(new CreateAccountRequest("Alice"));
         }
 
         @Test
@@ -58,8 +59,8 @@ class AccountServiceTest {
 
         @BeforeEach
         public void initialize() {
-            sourceAccount = accountService.createAccount("Alice");
-            destinationAccount = accountService.createAccount("Bob");
+            sourceAccount = accountService.createAccount(new CreateAccountRequest("Alice"));
+            destinationAccount = accountService.createAccount(new CreateAccountRequest("Bob"));
         }
 
         @Test
@@ -79,7 +80,7 @@ class AccountServiceTest {
 
         @BeforeEach
         public void initialize() {
-            sourceAccount = accountService.createAccount("Alice");
+            sourceAccount = accountService.createAccount(new CreateAccountRequest("Alice"));
         }
 
         @Test

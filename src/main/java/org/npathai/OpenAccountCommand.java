@@ -17,7 +17,7 @@ public class OpenAccountCommand implements Command {
     public List<String> execute() {
         String[] parts = command.split(" ");
         String accountHolderName = parts[2];
-        Account account = accountService.createAccount(accountHolderName);
+        Account account = accountService.createAccount(new CreateAccountRequest(accountHolderName));
         return List.of(account.accountNo());
     }
 }

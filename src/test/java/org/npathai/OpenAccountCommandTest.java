@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,10 +28,10 @@ class OpenAccountCommandTest {
     @Test
     public void returnsAccountNoOfNewlyOpenedAccount() {
         OpenAccountCommand openAccountCommand = new OpenAccountCommand(OPEN_ACCOUNT_COMMAND, accountService);
-        when(accountService.createAccount("Alice")).thenReturn(ACCOUNT);
+        when(accountService.createAccount(any(CreateAccountRequest.class))).thenReturn(ACCOUNT);
         List<String> output = openAccountCommand.execute();
 
-        verify(accountService).createAccount("Alice");
+        verify(accountService).createAccount(any(CreateAccountRequest.class));
         assertThat(output).isEqualTo(List.of(ACCOUNT.accountNo()));
     }
 }
