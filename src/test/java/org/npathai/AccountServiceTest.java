@@ -89,14 +89,15 @@ class AccountServiceTest {
 
         @Test
         public void cannotWithdrawAmountAfterClosingTheAccount() {
-            accountService.close(sourceAccount.accountNo());
+            CloseRequest closeRequest = new CloseRequest(sourceAccount.accountNo());
+            accountService.close(closeRequest);
             assertThatThrownBy(() -> accountService.withdrawAccount(new WithdrawRequest(sourceAccount.accountNo(), 1)))
                     .isInstanceOf(AccountClosedException.class);
         }
 
         @Test
         public void cannotDepositAmountAfterClosingTheAccount() {
-            accountService.close(sourceAccount.accountNo());
+            accountService.close(new CloseRequest(sourceAccount.accountNo()));
             assertThatThrownBy(() -> accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 1)))
                     .isInstanceOf(AccountClosedException.class);
         }

@@ -15,7 +15,7 @@ public class CloseCommand implements Command {
     public List<String> execute() {
         String[] parts = command.split(" ");
         String accountNo = parts[1];
-        accountService.close(accountNo);
+        accountService.close(new CloseRequest(accountNo));
         return List.of("Account closed");
     }
 }

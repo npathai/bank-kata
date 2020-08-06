@@ -2,6 +2,8 @@ package org.npathai;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -16,6 +18,8 @@ class CloseCommandTest {
 
     @Mock
     AccountService accountService;
+    @Captor
+    ArgumentCaptor<CloseRequest> requestArgumentCaptor;
     CloseCommand closeCommand;
 
     @BeforeEach
@@ -28,7 +32,8 @@ class CloseCommandTest {
     public void closesTheAccount() {
         closeCommand.execute();
 
-        verify(accountService).close(ACCOUNT.accountNo());
+        verify(accountService).close(requestArgumentCaptor.capture());
+        assertThat(requestArgumentCaptor.getValue().accountNo()).isEqualTo(ACCOUNT.accountNo());
     }
 
     @Test

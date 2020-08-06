@@ -7,10 +7,6 @@ import java.util.Map;
 public class AccountService {
     private Map<String, Account> accountByAccountNo = new HashMap<>();
 
-    public void close(String accountNo) {
-        accountByAccountNo.get(accountNo).close();
-    }
-
     public Account createAccount(CreateAccountRequest request) {
         Account account = new Account(request.accountHolderName());
         accountByAccountNo.put(account.accountNo(), account);
@@ -34,5 +30,9 @@ public class AccountService {
 
     public List<AccountTransaction> getStatement(ShowStatementRequest showStatementRequest) {
         return accountByAccountNo.get(showStatementRequest.accountNo()).transactions();
+    }
+
+    public void close(CloseRequest closeRequest) {
+        accountByAccountNo.get(closeRequest.accountNo()).close();
     }
 }
