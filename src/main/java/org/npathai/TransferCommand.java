@@ -18,7 +18,11 @@ public class TransferCommand implements Command {
         String fromAccountNo = parts[1];
         String toAccountNo = parts[2];
         int amount = Integer.parseInt(parts[3]);
-        accountService.transfer(new TransferRequest(fromAccountNo, toAccountNo, amount));
+        try {
+            accountService.transfer(new TransferRequest(fromAccountNo, toAccountNo, amount));
+        } catch (TransferFailedException ex) {
+            // FIXME bad that we are swallowing exception. Add acceptance test to give feedback for failure
+        }
         return Collections.emptyList();
     }
 }

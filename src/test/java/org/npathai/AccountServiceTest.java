@@ -75,6 +75,20 @@ class AccountServiceTest {
             assertThat(sourceAccount.transactions()).contains(new AccountTransaction("D", 1000));
             assertThat(destinationAccount.transactions()).containsExactly(new AccountTransaction("C", 1000));
         }
+
+        @Test
+        public void throwsExceptionAndAddsReversalTransactionToSourceAccountWhenAmountCannotBeTransferredToDestinationAccount() {
+            accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 1000));
+            destinationAccount.close();
+            TransferRequest transferRequest = new TransferRequest(sourceAccount.accountNo(),
+                    destinationAccount.accountNo(), 1000);
+
+            assertThatThrownBy(() -> accountService.transfer(transferRequest))
+                    .isInstanceOf(TransferFailedException.class);
+            List<AccountTransaction> transactions = sourceAccount.transactions();
+            assertThat(transactions.get(1)).isEqualTo(new AccountTransaction("D", 1000));
+            assertThat(transactions.get(2)).isEqualTo(new AccountTransaction("C", 1000));
+        }
     }
 
     @Nested

@@ -8,7 +8,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 class TransferCommandTest {
     final Account fromAccount = new Account("Alice");
@@ -43,6 +44,15 @@ class TransferCommandTest {
     @Test
     public void returnsNothing() {
         transferCommand = new TransferCommand(command, accountService);
+        assertThat(transferCommand.execute()).isEmpty();
+    }
+
+    @Test
+    public void returnsNothingWhenTransferFails() {
+        doThrow(TransferFailedException.class).when(accountService).transfer(any(TransferRequest.class));
+
+        transferCommand.execute();
+
         assertThat(transferCommand.execute()).isEmpty();
     }
 }

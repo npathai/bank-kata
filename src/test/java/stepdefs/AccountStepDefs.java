@@ -69,20 +69,17 @@ public class AccountStepDefs {
     @Then("{string} should see a withdrawal of Rs {int} in account")
     public void shouldSeeAWithdrawalOfInAccount(String accountHolderName, int amount) {
         application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " statement");
-        String lastTransaction = getLastTransactionFromStatement(application.readOutput());
-        assertThat(lastTransaction).isEqualTo("D||" + amount);
+        assertThat(allTransactions(application.readOutput())).contains("D||" + amount);
     }
 
-    private String getLastTransactionFromStatement(String output) {
-        Iterable<String> statementParts = Splitter.on(System.lineSeparator()).split(output);
-        return Iterables.getLast(statementParts);
+    private Iterable<String> allTransactions(String output) {
+        return Splitter.on(System.lineSeparator()).split(output);
     }
 
     @And("{string} should see a credit of Rs {int} in account")
     public void shouldSeeACreditOfInAccount(String accountHolderName, int amount) {
         application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " statement");
-        String lastTransaction = getLastTransactionFromStatement(application.readOutput());
-        assertThat(lastTransaction).isEqualTo("C||" + amount);
+        assertThat(allTransactions(application.readOutput())).contains("C||" + amount);
     }
 
     @When("{string} closes her account")
@@ -97,5 +94,11 @@ public class AccountStepDefs {
         assertThat(application.readOutput()).isEqualTo("Account is closed, cannot make any transaction");
         userDepositsToAccount(accountHolderName, 1);
         assertThat(application.readOutput()).isEqualTo("Account is closed, cannot make any transaction");
+    }
+
+    @And("{string} has closed the account")
+    public void hasClosedTheAccount(String accountHolderName) {
+        application.willReceive("close " + accountNoByAccountHolderName.get(accountHolderName));
+        application.readOutput();
     }
 }

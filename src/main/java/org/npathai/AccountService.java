@@ -13,11 +13,11 @@ public class AccountService {
         return account;
     }
 
-    public void depositAccount(DepositRequest depositRequest) {
+    public void depositAccount(DepositRequest depositRequest) throws AccountClosedException {
         accountByAccountNo.get(depositRequest.accountNo()).deposit(depositRequest.amount());
     }
 
-    public void withdrawAccount(WithdrawRequest withdrawRequest) {
+    public void withdrawAccount(WithdrawRequest withdrawRequest) throws AccountClosedException {
         accountByAccountNo.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount());
     }
 
@@ -25,7 +25,12 @@ public class AccountService {
         Account fromAccount = accountByAccountNo.get(transferRequest.fromAccountNo());
         Account toAccount = accountByAccountNo.get(transferRequest.toAccountNo());
         fromAccount.withdraw(transferRequest.amount());
-        toAccount.deposit(transferRequest.amount());
+        try {
+            toAccount.deposit(transferRequest.amount());
+        } catch (AccountClosedException ex) {
+            fromAccount.deposit(transferRequest.amount());
+            throw new TransferFailedException(ex);
+        }
     }
 
     public List<AccountTransaction> getStatement(ShowStatementRequest showStatementRequest) {
