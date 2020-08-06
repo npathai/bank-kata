@@ -19,7 +19,7 @@ public class WithdrawCommand implements Command {
         String accountNo = parts[0];
         int amount = Integer.parseInt(parts[2]);
         try {
-            accountService.withdrawAccount(accountNo, amount);
+            accountService.withdrawAccount(new WithdrawRequest(accountNo, amount));
             return Collections.emptyList();
         } catch (AccountClosedException ex) {
             return List.of("Account is closed, cannot make any transaction");

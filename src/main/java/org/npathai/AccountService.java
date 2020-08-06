@@ -7,10 +7,6 @@ import java.util.Map;
 public class AccountService {
     private Map<String, Account> accountByAccountNo = new HashMap<>();
 
-    public void withdrawAccount(String accountNo, int amount) {
-        accountByAccountNo.get(accountNo).withdraw(amount);
-    }
-
     public List<AccountTransaction> getStatement(String accountNo) {
         return accountByAccountNo.get(accountNo).transactions();
     }
@@ -34,5 +30,9 @@ public class AccountService {
 
     public void depositAccount(DepositRequest depositRequest) {
         accountByAccountNo.get(depositRequest.accountNo()).deposit(depositRequest.amount());
+    }
+
+    public void withdrawAccount(WithdrawRequest withdrawRequest) {
+        accountByAccountNo.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount());
     }
 }

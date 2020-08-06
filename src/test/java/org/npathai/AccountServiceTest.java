@@ -46,7 +46,8 @@ class AccountServiceTest {
 
         @Test
         public void withdrawsAmountInAccountWhichIsVisibleAsCreditInAccountStatement() {
-            accountService.withdrawAccount(account.accountNo(), 1000);
+            WithdrawRequest withdrawRequest = new WithdrawRequest(account.accountNo(), 1000);
+            accountService.withdrawAccount(withdrawRequest);
 
             assertThat(accountService.getStatement(account.accountNo()))
                     .isEqualTo(List.of(new AccountTransaction("D", 1000)));
@@ -87,7 +88,7 @@ class AccountServiceTest {
         @Test
         public void cannotWithdrawAmountAfterClosingTheAccount() {
             accountService.close(sourceAccount.accountNo());
-            assertThatThrownBy(() -> accountService.withdrawAccount(sourceAccount.accountNo(), 1))
+            assertThatThrownBy(() -> accountService.withdrawAccount(new WithdrawRequest(sourceAccount.accountNo(), 1)))
                     .isInstanceOf(AccountClosedException.class);
         }
 
