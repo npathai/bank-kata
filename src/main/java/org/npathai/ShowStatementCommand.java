@@ -17,7 +17,7 @@ public class ShowStatementCommand implements Command {
     @Override
     public List<String> execute() {
         String accountNo = command.split(" ")[0];
-        List<AccountTransaction> transactions = accountService.getStatement(accountNo);
+        List<AccountTransaction> transactions = accountService.getStatement(new ShowStatementRequest(accountNo));
         List<String> statement = new ArrayList<>();
         statement.add("type||amount");
         for (AccountTransaction transaction : transactions) {

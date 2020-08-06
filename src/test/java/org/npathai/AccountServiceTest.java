@@ -39,8 +39,8 @@ class AccountServiceTest {
         public void depositsAmountInAccountWhichIsVisibleAsCreditInAccountStatement() {
             DepositRequest depositRequest = new DepositRequest(account.accountNo(), 1000);
             accountService.depositAccount(depositRequest);
-
-            assertThat(accountService.getStatement(account.accountNo()))
+            ShowStatementRequest showStatementRequest = new ShowStatementRequest(account.accountNo());
+            assertThat(accountService.getStatement(showStatementRequest))
                     .isEqualTo(List.of(new AccountTransaction("C", 1000)));
         }
 
@@ -49,7 +49,7 @@ class AccountServiceTest {
             WithdrawRequest withdrawRequest = new WithdrawRequest(account.accountNo(), 1000);
             accountService.withdrawAccount(withdrawRequest);
 
-            assertThat(accountService.getStatement(account.accountNo()))
+            assertThat(accountService.getStatement(new ShowStatementRequest(account.accountNo())))
                     .isEqualTo(List.of(new AccountTransaction("D", 1000)));
         }
     }
