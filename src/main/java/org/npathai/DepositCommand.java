@@ -19,7 +19,7 @@ public class DepositCommand implements Command {
         String accountNo = parts[0];
         int amount = Integer.parseInt(parts[2]);
         try {
-            accountService.depositAccount(accountNo, amount);
+            accountService.depositAccount(new DepositRequest(accountNo, amount));
             return Collections.emptyList();
         } catch (AccountClosedException ex) {
             return List.of("Account is closed, cannot make any transaction");

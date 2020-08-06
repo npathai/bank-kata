@@ -11,10 +11,6 @@ public class AccountService {
         accountByAccountNo.get(accountNo).withdraw(amount);
     }
 
-    public void depositAccount(String accountNo, int amount) {
-        accountByAccountNo.get(accountNo).deposit(amount);
-    }
-
     public List<AccountTransaction> getStatement(String accountNo) {
         return accountByAccountNo.get(accountNo).transactions();
     }
@@ -34,5 +30,9 @@ public class AccountService {
         Account account = new Account(request.accountHolderName());
         accountByAccountNo.put(account.accountNo(), account);
         return account;
+    }
+
+    public void depositAccount(DepositRequest depositRequest) {
+        accountByAccountNo.get(depositRequest.accountNo()).deposit(depositRequest.amount());
     }
 }

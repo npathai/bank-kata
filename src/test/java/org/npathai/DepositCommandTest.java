@@ -2,10 +2,10 @@ package org.npathai;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -17,6 +17,8 @@ class DepositCommandTest {
 
     @Mock
     AccountService accountService;
+    @Captor
+    ArgumentCaptor<DepositRequest> requestArgumentCaptor;
     private DepositCommand depositCommand;
 
     @BeforeEach
@@ -29,7 +31,9 @@ class DepositCommandTest {
     public void depositsAmountToAccount() {
         depositCommand.execute();
 
-        verify(accountService).depositAccount(ACCOUNT.accountNo(), 1000);
+        verify(accountService).depositAccount(requestArgumentCaptor.capture());
+        assertThat(requestArgumentCaptor.getValue().accountNo()).isEqualTo(ACCOUNT.accountNo());
+        assertThat(requestArgumentCaptor.getValue().amount()).isEqualTo(1000);
     }
 
     @Test
@@ -39,7 +43,7 @@ class DepositCommandTest {
 
     @Test
     public void returnsClosureMessageWhenTriedToDepositAccountAfterClosingAccount() {
-        doThrow(AccountClosedException.class).when(accountService).depositAccount(ACCOUNT.accountNo(), 1000);
+        doThrow(AccountClosedException.class).when(accountService).depositAccount(any(DepositRequest.class));
 
         assertThat(depositCommand.execute()).contains("Account is closed, cannot make any transaction");
     }

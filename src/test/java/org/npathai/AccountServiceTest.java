@@ -37,7 +37,8 @@ class AccountServiceTest {
 
         @Test
         public void depositsAmountInAccountWhichIsVisibleAsCreditInAccountStatement() {
-            accountService.depositAccount(account.accountNo(), 1000);
+            DepositRequest depositRequest = new DepositRequest(account.accountNo(), 1000);
+            accountService.depositAccount(depositRequest);
 
             assertThat(accountService.getStatement(account.accountNo()))
                     .isEqualTo(List.of(new AccountTransaction("C", 1000)));
@@ -65,7 +66,7 @@ class AccountServiceTest {
 
         @Test
         public void transferringAmountWithdrawsTheAmountFromSourceAccountAndDepositsToDestinationAccount() {
-            accountService.depositAccount(sourceAccount.accountNo(), 1000);
+            accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 1000));
             accountService.transfer(sourceAccount.accountNo(), destinationAccount.accountNo(), 1000);
 
             assertThat(sourceAccount.transactions()).contains(new AccountTransaction("D", 1000));
@@ -93,7 +94,7 @@ class AccountServiceTest {
         @Test
         public void cannotDepositAmountAfterClosingTheAccount() {
             accountService.close(sourceAccount.accountNo());
-            assertThatThrownBy(() -> accountService.depositAccount(sourceAccount.accountNo(), 1))
+            assertThatThrownBy(() -> accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 1)))
                     .isInstanceOf(AccountClosedException.class);
         }
     }
