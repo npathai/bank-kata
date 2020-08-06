@@ -2,6 +2,8 @@ package org.npathai;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -9,13 +11,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 class TransferCommandTest {
-    private final Account fromAccount = new Account("Alice");
-    private final Account toAccount = new Account("Bob");
+    final Account fromAccount = new Account("Alice");
+    final Account toAccount = new Account("Bob");
 
     @Mock
     AccountService accountService;
-    private TransferCommand transferCommand;
-    private String command;
+    @Captor
+    ArgumentCaptor<TransferRequest> requestArgumentCaptor;
+    TransferCommand transferCommand;
+    String command;
 
     @BeforeEach
     public void initialize() {
@@ -29,7 +33,11 @@ class TransferCommandTest {
     @Test
     public void transfersAmountFromSourceToDestinationAccount() {
         transferCommand.execute();
-        verify(accountService).transfer(fromAccount.accountNo(), toAccount.accountNo(), 1000);
+
+        verify(accountService).transfer(requestArgumentCaptor.capture());
+        assertThat(requestArgumentCaptor.getValue().fromAccountNo()).isEqualTo(fromAccount.accountNo());
+        assertThat(requestArgumentCaptor.getValue().toAccountNo()).isEqualTo(toAccount.accountNo());
+        assertThat(requestArgumentCaptor.getValue().amount()).isEqualTo(1000);
     }
 
     @Test

@@ -11,13 +11,6 @@ public class AccountService {
         return accountByAccountNo.get(accountNo).transactions();
     }
 
-    public void transfer(String fromAccountNo, String toAccountNo, int amount) {
-        Account fromAccount = accountByAccountNo.get(fromAccountNo);
-        Account toAccount = accountByAccountNo.get(toAccountNo);
-        fromAccount.withdraw(amount);
-        toAccount.deposit(amount);
-    }
-
     public void close(String accountNo) {
         accountByAccountNo.get(accountNo).close();
     }
@@ -34,5 +27,12 @@ public class AccountService {
 
     public void withdrawAccount(WithdrawRequest withdrawRequest) {
         accountByAccountNo.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount());
+    }
+
+    public void transfer(TransferRequest transferRequest) {
+        Account fromAccount = accountByAccountNo.get(transferRequest.fromAccountNo());
+        Account toAccount = accountByAccountNo.get(transferRequest.toAccountNo());
+        fromAccount.withdraw(transferRequest.amount());
+        toAccount.deposit(transferRequest.amount());
     }
 }

@@ -18,7 +18,7 @@ public class TransferCommand implements Command {
         String fromAccountNo = parts[1];
         String toAccountNo = parts[2];
         int amount = Integer.parseInt(parts[3]);
-        accountService.transfer(fromAccountNo, toAccountNo, amount);
+        accountService.transfer(new TransferRequest(fromAccountNo, toAccountNo, amount));
         return Collections.emptyList();
     }
 }

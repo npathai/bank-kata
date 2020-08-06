@@ -68,7 +68,9 @@ class AccountServiceTest {
         @Test
         public void transferringAmountWithdrawsTheAmountFromSourceAccountAndDepositsToDestinationAccount() {
             accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 1000));
-            accountService.transfer(sourceAccount.accountNo(), destinationAccount.accountNo(), 1000);
+            TransferRequest transferRequest = new TransferRequest(sourceAccount.accountNo(),
+                    destinationAccount.accountNo(), 1000);
+            accountService.transfer(transferRequest);
 
             assertThat(sourceAccount.transactions()).contains(new AccountTransaction("D", 1000));
             assertThat(destinationAccount.transactions()).containsExactly(new AccountTransaction("C", 1000));
