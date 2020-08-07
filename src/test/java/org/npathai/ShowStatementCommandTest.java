@@ -29,9 +29,9 @@ class ShowStatementCommandTest {
 
     @Test
     public void showsAllTransactionsInChronologicalOrderOfTheirOccurrence() {
-        AccountTransaction depositTransaction = new AccountTransaction("C", 1000);
-        AccountTransaction withdrawTransaction = new AccountTransaction("D", 500);
-        AccountTransaction withdrawTransaction2 = new AccountTransaction("D", 100);
+        AccountTransaction depositTransaction = new AccountTransaction(TransactionType.typeFrom("C"), 1000);
+        AccountTransaction withdrawTransaction = new AccountTransaction(TransactionType.typeFrom("D"), 500);
+        AccountTransaction withdrawTransaction2 = new AccountTransaction(TransactionType.typeFrom("D"), 100);
 
         when(accountService.getStatement(any(ShowStatementRequest.class))).thenReturn(List.of(depositTransaction,
                 withdrawTransaction, withdrawTransaction2));

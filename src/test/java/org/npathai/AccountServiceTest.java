@@ -41,7 +41,7 @@ class AccountServiceTest {
             accountService.depositAccount(depositRequest);
             ShowStatementRequest showStatementRequest = new ShowStatementRequest(account.accountNo());
             assertThat(accountService.getStatement(showStatementRequest))
-                    .isEqualTo(List.of(new AccountTransaction("C", 1000)));
+                    .isEqualTo(List.of(new AccountTransaction(TransactionType.typeFrom("C"), 1000)));
         }
 
         @Test
@@ -50,7 +50,7 @@ class AccountServiceTest {
             accountService.withdrawAccount(withdrawRequest);
 
             assertThat(accountService.getStatement(new ShowStatementRequest(account.accountNo())))
-                    .isEqualTo(List.of(new AccountTransaction("D", 1000)));
+                    .isEqualTo(List.of(new AccountTransaction(TransactionType.typeFrom("D"), 1000)));
         }
     }
 
@@ -72,8 +72,10 @@ class AccountServiceTest {
                     destinationAccount.accountNo(), 1000);
             accountService.transfer(transferRequest);
 
-            assertThat(sourceAccount.transactions()).contains(new AccountTransaction("D", 1000));
-            assertThat(destinationAccount.transactions()).containsExactly(new AccountTransaction("C", 1000));
+            assertThat(sourceAccount.transactions())
+                    .contains(new AccountTransaction(TransactionType.DEBIT, 1000));
+            assertThat(destinationAccount.transactions())
+                    .containsExactly(new AccountTransaction(TransactionType.CREDIT, 1000));
         }
 
         @Test
@@ -86,8 +88,8 @@ class AccountServiceTest {
             assertThatThrownBy(() -> accountService.transfer(transferRequest))
                     .isInstanceOf(TransferFailedException.class);
             List<AccountTransaction> transactions = sourceAccount.transactions();
-            assertThat(transactions.get(1)).isEqualTo(new AccountTransaction("D", 1000));
-            assertThat(transactions.get(2)).isEqualTo(new AccountTransaction("C", 1000));
+            assertThat(transactions.get(1)).isEqualTo(new AccountTransaction(TransactionType.typeFrom("D"), 1000));
+            assertThat(transactions.get(2)).isEqualTo(new AccountTransaction(TransactionType.typeFrom("C"), 1000));
         }
     }
 

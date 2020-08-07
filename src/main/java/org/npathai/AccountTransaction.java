@@ -3,12 +3,20 @@ package org.npathai;
 import java.util.Objects;
 
 public class AccountTransaction {
-    String type;
-    long amount;
+    private TransactionType type;
+    private long amount;
 
-    public AccountTransaction(String type, long amount) {
+    public AccountTransaction(TransactionType type, long amount) {
         this.type = type;
         this.amount = amount;
+    }
+
+    public String type() {
+        return TransactionType.asString(type);
+    }
+
+    public long amount() {
+        return amount;
     }
 
     @Override

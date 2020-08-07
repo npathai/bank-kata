@@ -21,7 +21,7 @@ public class ShowStatementCommand implements Command {
         List<String> statement = new ArrayList<>();
         statement.add("type||amount");
         for (AccountTransaction transaction : transactions) {
-            statement.add(transaction.type + "||" + transaction.amount);
+            statement.add(transaction.type() + "||" + transaction.amount());
         }
         return statement;
     }
