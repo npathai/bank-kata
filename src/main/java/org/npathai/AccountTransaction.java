@@ -11,8 +11,8 @@ public class AccountTransaction {
         this.amount = amount;
     }
 
-    public String type() {
-        return TransactionType.asString(type);
+    public TransactionType type() {
+        return type;
     }
 
     public long amount() {
