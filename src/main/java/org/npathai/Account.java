@@ -18,14 +18,14 @@ public class Account {
         if (closed) {
             throw new AccountClosedException();
         }
-        transactionList.add(new AccountTransaction(TransactionType.typeFrom("C"), amount));
+        transactionList.add(new AccountTransaction(TransactionType.CREDIT, amount));
     }
 
     public void withdraw(int amount) {
         if (closed) {
             throw new AccountClosedException();
         }
-        transactionList.add(new AccountTransaction(TransactionType.typeFrom("D"), amount));
+        transactionList.add(new AccountTransaction(TransactionType.DEBIT, amount));
     }
 
     public String accountNo() {
