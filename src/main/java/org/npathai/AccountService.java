@@ -3,6 +3,8 @@ package org.npathai;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class AccountService {
     private Map<String, Account> accountByAccountNo = new HashMap<>();
@@ -34,7 +36,20 @@ public class AccountService {
     }
 
     public List<AccountTransaction> getStatement(ShowStatementRequest showStatementRequest) {
-        return accountByAccountNo.get(showStatementRequest.accountNo()).transactions();
+        Predicate<AccountTransaction> typeFilter = typeFilterFrom(showStatementRequest);
+        return accountByAccountNo.get(showStatementRequest.accountNo()).transactions()
+                .stream()
+                .filter(typeFilter)
+                .collect(Collectors.toList());
+    }
+
+    private Predicate<AccountTransaction> typeFilterFrom(ShowStatementRequest showStatementRequest) {
+        if (showStatementRequest.typeFilter() == null) {
+            return type -> true;
+        } else {
+            TransactionType filterType = TransactionType.typeFrom(showStatementRequest.typeFilter());
+            return type -> type.type() == filterType;
+        }
     }
 
     public void close(CloseRequest closeRequest) {

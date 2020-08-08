@@ -118,4 +118,37 @@ class AccountServiceTest {
                     .isInstanceOf(AccountClosedException.class);
         }
     }
+
+    @Nested
+    public class ShowStatement {
+
+        private Account account;
+
+        @BeforeEach
+        public void initialize() {
+            account = accountService.createAccount(new CreateAccountRequest("Alice"));
+            accountService.depositAccount(new DepositRequest(account.accountNo(), 1000));
+            accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 1000));
+            accountService.depositAccount(new DepositRequest(account.accountNo(), 3000));
+            accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 100));
+        }
+
+        @Test
+        public void returnsOnlyCreditedTransactionsInChronologicalOrderWhenTypeFilterIsCredit() {
+            ShowStatementRequest showStatementRequest = new ShowStatementRequest(account.accountNo());
+            showStatementRequest.typeFilter("C");
+            List<AccountTransaction> statement = accountService.getStatement(showStatementRequest);
+            assertThat(statement).isEqualTo(List.of(new AccountTransaction(TransactionType.CREDIT, 1000),
+                    new AccountTransaction(TransactionType.CREDIT, 3000)));
+        }
+
+        @Test
+        public void returnsOnlyWithdrawnTransactionsInChronologicalOrderWhenTypeFilterIsDebit() {
+            ShowStatementRequest showStatementRequest = new ShowStatementRequest(account.accountNo());
+            showStatementRequest.typeFilter("D");
+            List<AccountTransaction> statement = accountService.getStatement(showStatementRequest);
+            assertThat(statement).isEqualTo(List.of(new AccountTransaction(TransactionType.DEBIT, 1000),
+                    new AccountTransaction(TransactionType.DEBIT, 100)));
+        }
+    }
 }
