@@ -2,7 +2,7 @@ package stepdefs;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
+import com.google.common.collect.ImmutableList;
 import intrastructure.Fixture;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -19,6 +19,7 @@ public class AccountStepDefs {
 
     Fixture application = new Fixture();
     private final Map<String, String> accountNoByAccountHolderName = new HashMap<>();
+    private List<String> statement;
 
     public AccountStepDefs() {
         System.out.println("Instance of AccountStepDefs created");
@@ -68,12 +69,16 @@ public class AccountStepDefs {
 
     @Then("{string} should see a withdrawal of Rs {int} in account")
     public void shouldSeeAWithdrawalOfInAccount(String accountHolderName, int amount) {
-        application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " statement");
+        applictionWillReceiveShowStatementCommand(accountNoByAccountHolderName.get(accountHolderName), " statement");
         assertThat(allTransactions(application.readOutput())).contains("D||" + amount);
     }
 
-    private Iterable<String> allTransactions(String output) {
-        return Splitter.on(System.lineSeparator()).split(output);
+    private void applictionWillReceiveShowStatementCommand(String s, String s2) {
+        application.willReceive(s + s2);
+    }
+
+    private List<String> allTransactions(String output) {
+        return ImmutableList.copyOf(Splitter.on(System.lineSeparator()).split(output));
     }
 
     @And("{string} should see a credit of Rs {int} in account")
@@ -100,5 +105,37 @@ public class AccountStepDefs {
     public void hasClosedTheAccount(String accountHolderName) {
         application.willReceive("close " + accountNoByAccountHolderName.get(accountHolderName));
         application.readOutput();
+    }
+
+    @And("{string} has deposited Rs {int} to her account")
+    public void hasDepositedRsToHerAccount(String accountHolderName, int amount) {
+        userDepositsToAccount(accountHolderName, amount);
+    }
+
+    @And("{string} has withdrawn Rs {int} from her account")
+    public void hasWithdrawnRsFromHerAccount(String accountHolderName, int amount) {
+        userWithdrawsFromAccount(accountHolderName, amount);
+    }
+
+    @When("{string} sees account statement filtered by type {string}")
+    public void seesAccountStatementFilteredByType(String accountHolderName, String transactionType) {
+        application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " statement --type "
+                + toStatementType(transactionType));
+        statement = allTransactions(application.readOutput());
+    }
+
+    @Then("{string} can see account statement containing {int} transactions of type {string}")
+    public void canSeeAccountStatementContainingTransactionsOfType(String accountHolderName, int count,
+                                                                   String transactionType) {
+        // Doing size - 1 to remove the statement header
+        assertThat(statement.size() - 1).isEqualTo(count);
+        String statementType = toStatementType(transactionType);
+        for (int i = 1; i < count; i++) {
+            assertThat(statement.get(i)).contains(statementType);
+        }
+    }
+
+    private String toStatementType(String transactionType) {
+        return "deposit".equals(transactionType) ? "C" : "D";
     }
 }

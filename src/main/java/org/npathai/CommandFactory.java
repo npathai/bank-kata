@@ -15,7 +15,7 @@ public class CommandFactory {
             return new DepositCommand(command, accountService);
         } else if (command.contains(" withdraw ")) {
             return new WithdrawCommand(command, accountService);
-        } else if (command.endsWith("statement")) {
+        } else if (command.contains(" statement")) {
             return new ShowStatementCommand(command, accountService);
         } else if (command.startsWith("transfer")) {
             return new TransferCommand(command, accountService);

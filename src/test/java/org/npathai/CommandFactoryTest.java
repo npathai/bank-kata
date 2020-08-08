@@ -15,6 +15,7 @@ class CommandFactoryTest {
     static final String WITHDRAW_COMMAND = ACCOUNT_NO + " withdraw 1000";
     static final String DEPOSIT_COMMAND = ACCOUNT_NO + " deposit 1000";
     static final String SHOW_STATEMENT_COMMAND = ACCOUNT_NO + " statement";
+    static final String SHOW_STATEMENT_WITH_FILTER_COMMAND = ACCOUNT_NO + " statement --type C";
     static final String TRANSFER_COMMAND = "transfer " + ACCOUNT_NO + " " + UUID.randomUUID().toString() + " 1000";
     static final String CLOSE_COMMAND = "close " + ACCOUNT_NO;
 
@@ -47,6 +48,11 @@ class CommandFactoryTest {
     @Test
     public void returnsShowStatementCommand() {
         assertThat(commandFactory.createCommand(SHOW_STATEMENT_COMMAND)).isInstanceOf(ShowStatementCommand.class);
+    }
+
+    @Test
+    public void returnsShowStatementCommandWhenFilterIsProvided() {
+        assertThat(commandFactory.createCommand(SHOW_STATEMENT_WITH_FILTER_COMMAND)).isInstanceOf(ShowStatementCommand.class);
     }
 
     @Test
