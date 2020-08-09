@@ -22,3 +22,11 @@ Feature: Account Statement
 
   Scenario: As an account holder, I want ability to filter transactions of type WITHDRAWAL,
   so that I can easily navigate and understand my expenditures
+
+    Given "Alice" is an account holder
+    And "Alice" has deposited Rs 1000 to her account
+    And "Alice" has withdrawn Rs 100 from her account
+    And "Alice" has deposited Rs 500 to her account
+    And "Alice" has withdrawn Rs 200 from her account
+    When "Alice" sees account statement filtered by type "withdrawal"
+    Then "Alice" can see account statement containing 2 transactions of type "withdrawal"
