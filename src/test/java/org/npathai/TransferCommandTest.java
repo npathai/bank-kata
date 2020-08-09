@@ -55,4 +55,13 @@ class TransferCommandTest {
 
         assertThat(transferCommand.execute()).isEmpty();
     }
+
+    @Test
+    public void returnsMessageWhenTransferFailsDueToInsufficientFunds() {
+        doThrow(InsufficientFundsException.class).when(accountService).transfer(any(TransferRequest.class));
+
+        transferCommand.execute();
+
+        assertThat(transferCommand.execute()).containsExactly("Insufficient funds in account");
+    }
 }

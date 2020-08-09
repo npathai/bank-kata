@@ -17,3 +17,13 @@ Feature: Transfer Funds
     When "Alice" transfers Rs 1000 to "Bob"'s account
     Then "Alice" should see a withdrawal of Rs 1000 in account
     And "Alice" should see a credit of Rs 1000 in account
+
+  Scenario: As a bank, I don't want account holders to be able to transfer more than
+    current balance in account
+
+    Given "Alice" is an account holder with initial balance of Rs 1000
+    And "Bob" is an account holder
+    And "Alice" has withdrawn Rs 100 from her account
+    And "Alice" has deposited Rs 500 to her account
+    When "Alice" transfers Rs 1401 to "Bob"'s account
+    Then "Alice" should fail to transfer due to insufficient funds

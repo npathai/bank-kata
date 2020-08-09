@@ -23,7 +23,7 @@ public class AccountService {
         accountByAccountNo.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount());
     }
 
-    public void transfer(TransferRequest transferRequest) {
+    public void transfer(TransferRequest transferRequest) throws InsufficientFundsException {
         Account fromAccount = accountByAccountNo.get(transferRequest.fromAccountNo());
         Account toAccount = accountByAccountNo.get(transferRequest.toAccountNo());
         fromAccount.withdraw(transferRequest.amount());

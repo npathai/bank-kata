@@ -91,6 +91,19 @@ class AccountServiceTest {
             assertThat(transactions.get(1)).isEqualTo(new AccountTransaction(TransactionType.DEBIT, 1000));
             assertThat(transactions.get(2)).isEqualTo(new AccountTransaction(TransactionType.CREDIT, 1000));
         }
+
+        @Test
+        public void throwsInsufficientFundsExceptionWhenSourceAccountDoesNotHaveSufficientFunds() {
+            accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 1000));
+            accountService.withdrawAccount(new WithdrawRequest(sourceAccount.accountNo(), 100));
+            accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 500));
+
+            TransferRequest transferRequest = new TransferRequest(sourceAccount.accountNo(),
+                    destinationAccount.accountNo(), 1401);
+
+            assertThatThrownBy(() -> accountService.transfer(transferRequest))
+                    .isInstanceOf(InsufficientFundsException.class);
+        }
     }
 
     @Nested

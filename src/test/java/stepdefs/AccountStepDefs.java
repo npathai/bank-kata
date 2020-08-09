@@ -138,4 +138,9 @@ public class AccountStepDefs {
     private String toStatementType(String transactionType) {
         return "deposit".equals(transactionType) ? "C" : "D";
     }
+
+    @Then("{string} should fail to transfer due to insufficient funds")
+    public void shouldFailToTransferDueToInsufficientFunds(String accountHolderName) {
+        assertThat(application.readOutput()).isEqualTo("Insufficient funds in account");
+    }
 }

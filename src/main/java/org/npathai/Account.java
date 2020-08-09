@@ -25,7 +25,22 @@ public class Account {
         if (closed) {
             throw new AccountClosedException();
         }
+        if (balance() < amount) {
+            throw new InsufficientFundsException();
+        }
         transactionList.add(new AccountTransaction(TransactionType.DEBIT, amount));
+    }
+
+    private long balance() {
+        long balance = 0;
+        for (AccountTransaction accountTransaction : transactions()) {
+            if (accountTransaction.type() == TransactionType.CREDIT) {
+                balance += accountTransaction.amount();
+            } else {
+                balance -= accountTransaction.amount();
+            }
+        }
+        return balance;
     }
 
     public String accountNo() {

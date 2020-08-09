@@ -22,6 +22,8 @@ public class TransferCommand implements Command {
             accountService.transfer(new TransferRequest(fromAccountNo, toAccountNo, amount));
         } catch (TransferFailedException ex) {
             // FIXME bad that we are swallowing exception. Add acceptance test to give feedback for failure
+        } catch (InsufficientFundsException ex) {
+            return List.of("Insufficient funds in account");
         }
         return Collections.emptyList();
     }
