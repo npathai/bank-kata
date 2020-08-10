@@ -19,7 +19,7 @@ public class AccountService {
         accountByAccountNo.get(depositRequest.accountNo()).deposit(depositRequest.amount());
     }
 
-    public void withdrawAccount(WithdrawRequest withdrawRequest) throws AccountClosedException {
+    public void withdrawAccount(WithdrawRequest withdrawRequest) throws AccountException {
         accountByAccountNo.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount());
     }
 

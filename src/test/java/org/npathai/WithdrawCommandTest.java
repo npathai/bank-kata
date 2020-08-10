@@ -48,4 +48,12 @@ class WithdrawCommandTest {
 
         assertThat(withdrawCommand.execute()).contains("Account is closed, cannot make any transaction");
     }
+    
+    @Test
+    public void returnsMinimumBalanceNecessaryMessageWhenWithdrawingAmountThatCausesBalanceToGoBelowMinRequirement() {
+        AccountUnderflowException accountUnderflowException = new AccountUnderflowException(500);
+        doThrow(accountUnderflowException).when(accountService).withdrawAccount(any(WithdrawRequest.class));
+
+        assertThat(withdrawCommand.execute()).contains("Must maintain minimum balance of 500");
+    }
 }

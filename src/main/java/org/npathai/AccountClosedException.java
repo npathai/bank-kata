@@ -1,5 +1,5 @@
 package org.npathai;
 
-public class AccountClosedException extends RuntimeException {
+public class AccountClosedException extends AccountException {
 
 }

@@ -23,6 +23,8 @@ public class WithdrawCommand implements Command {
             return Collections.emptyList();
         } catch (AccountClosedException ex) {
             return List.of("Account is closed, cannot make any transaction");
+        } catch (AccountUnderflowException ex) {
+            return List.of("Must maintain minimum balance of " + ex.minBalance());
         }
     }
 }

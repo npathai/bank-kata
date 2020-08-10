@@ -45,12 +45,14 @@ class AccountServiceTest {
         }
 
         @Test
-        public void withdrawsAmountInAccountWhichIsVisibleAsCreditInAccountStatement() {
+        public void withdrawsAmountInAccountWhichIsVisibleAsDebitInAccountStatement() {
+            DepositRequest depositRequest = new DepositRequest(account.accountNo(), 1000);
+            accountService.depositAccount(depositRequest);
             WithdrawRequest withdrawRequest = new WithdrawRequest(account.accountNo(), 1000);
             accountService.withdrawAccount(withdrawRequest);
 
             assertThat(accountService.getStatement(new ShowStatementRequest(account.accountNo())))
-                    .isEqualTo(List.of(new AccountTransaction(TransactionType.DEBIT, 1000)));
+                    .contains(new AccountTransaction(TransactionType.DEBIT, 1000));
         }
     }
 
