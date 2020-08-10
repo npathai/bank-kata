@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class Account {
+    private static final int MIN_BALANCE = 500;
+
     private String accountNo = UUID.randomUUID().toString();
     private final String accountHolderName;
     private List<AccountTransaction> transactionList = new ArrayList<>();
@@ -27,6 +29,9 @@ public class Account {
         }
         if (balance() < amount) {
             throw new InsufficientFundsException();
+        }
+        if (balance() - amount < MIN_BALANCE) {
+            throw new AccountUnderflowException(MIN_BALANCE);
         }
         transactionList.add(new AccountTransaction(TransactionType.DEBIT, amount));
     }

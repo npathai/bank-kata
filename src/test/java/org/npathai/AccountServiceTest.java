@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 class AccountServiceTest {
     AccountService accountService;
@@ -46,7 +45,7 @@ class AccountServiceTest {
 
         @Test
         public void withdrawsAmountInAccountWhichIsVisibleAsDebitInAccountStatement() {
-            DepositRequest depositRequest = new DepositRequest(account.accountNo(), 1000);
+            DepositRequest depositRequest = new DepositRequest(account.accountNo(), 2000);
             accountService.depositAccount(depositRequest);
             WithdrawRequest withdrawRequest = new WithdrawRequest(account.accountNo(), 1000);
             accountService.withdrawAccount(withdrawRequest);
@@ -69,7 +68,7 @@ class AccountServiceTest {
 
         @Test
         public void transferringAmountWithdrawsTheAmountFromSourceAccountAndDepositsToDestinationAccount() {
-            accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 1000));
+            accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 2000));
             TransferRequest transferRequest = new TransferRequest(sourceAccount.accountNo(),
                     destinationAccount.accountNo(), 1000);
             accountService.transfer(transferRequest);
@@ -82,7 +81,7 @@ class AccountServiceTest {
 
         @Test
         public void throwsExceptionAndAddsReversalTransactionToSourceAccountWhenAmountCannotBeTransferredToDestinationAccount() {
-            accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 1000));
+            accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 2000));
             destinationAccount.close();
             TransferRequest transferRequest = new TransferRequest(sourceAccount.accountNo(),
                     destinationAccount.accountNo(), 1000);
@@ -142,7 +141,7 @@ class AccountServiceTest {
         @BeforeEach
         public void initialize() {
             account = accountService.createAccount(new CreateAccountRequest("Alice"));
-            accountService.depositAccount(new DepositRequest(account.accountNo(), 1000));
+            accountService.depositAccount(new DepositRequest(account.accountNo(), 2000));
             accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 1000));
             accountService.depositAccount(new DepositRequest(account.accountNo(), 3000));
             accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 100));
@@ -153,7 +152,7 @@ class AccountServiceTest {
             ShowStatementRequest showStatementRequest = new ShowStatementRequest(account.accountNo());
             showStatementRequest.typeFilter("C");
             List<AccountTransaction> statement = accountService.getStatement(showStatementRequest);
-            assertThat(statement).isEqualTo(List.of(new AccountTransaction(TransactionType.CREDIT, 1000),
+            assertThat(statement).isEqualTo(List.of(new AccountTransaction(TransactionType.CREDIT, 2000),
                     new AccountTransaction(TransactionType.CREDIT, 3000)));
         }
 
@@ -164,6 +163,27 @@ class AccountServiceTest {
             List<AccountTransaction> statement = accountService.getStatement(showStatementRequest);
             assertThat(statement).isEqualTo(List.of(new AccountTransaction(TransactionType.DEBIT, 1000),
                     new AccountTransaction(TransactionType.DEBIT, 100)));
+        }
+    }
+
+    @Nested
+    public class WithdrawAmount {
+
+        private Account account;
+
+        @BeforeEach
+        public void initialize() {
+            account = accountService.createAccount(new CreateAccountRequest("Alice"));
+            accountService.depositAccount(new DepositRequest(account.accountNo(), 1000));
+            accountService.depositAccount(new DepositRequest(account.accountNo(), 500));
+        }
+
+        @Test
+        public void throwsExceptionWhenTriedToWithdrawAmountThatTakesAccountBalanceBelowMinBalance() {
+            WithdrawRequest withdrawRequest = new WithdrawRequest(account.accountNo(), 1001);
+            Throwable throwable = catchThrowable(() -> accountService.withdrawAccount(withdrawRequest));
+            assertThat(throwable).isInstanceOf(AccountUnderflowException.class);
+            assertThat(((AccountUnderflowException) throwable).minBalance()).isEqualTo(500);
         }
     }
 }
