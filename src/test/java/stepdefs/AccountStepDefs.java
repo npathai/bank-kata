@@ -143,4 +143,9 @@ public class AccountStepDefs {
     public void shouldFailToTransferDueToInsufficientFunds(String accountHolderName) {
         assertThat(application.readOutput()).isEqualTo("Insufficient funds in account");
     }
+
+    @Then("{string} should fail to withdraw amount due to minimum balance requirement")
+    public void shouldFailToWithdrawAmountToMinimumBalanceRequirement(String accountHolderName) {
+        assertThat(application.readOutput()).isEqualTo("Must maintain minimum balance of 500");
+    }
 }
