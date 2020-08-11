@@ -24,6 +24,8 @@ public class TransferCommand implements Command {
             // FIXME bad that we are swallowing exception. Add acceptance test to give feedback for failure
         } catch (InsufficientFundsException ex) {
             return List.of("Insufficient funds in account");
+        } catch (AccountUnderflowException ex) {
+            return List.of("Must maintain minimum balance of " + ex.minBalance());
         }
         return Collections.emptyList();
     }

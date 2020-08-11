@@ -7,6 +7,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -63,5 +65,15 @@ class TransferCommandTest {
         transferCommand.execute();
 
         assertThat(transferCommand.execute()).containsExactly("Insufficient funds in account");
+    }
+
+    @Test
+    public void returnsMessageWhenTransferFailsDueToAccountUnderflows() {
+        AccountUnderflowException accountUnderflowException = new AccountUnderflowException(500);
+        doThrow(accountUnderflowException).when(accountService).transfer(any(TransferRequest.class));
+
+        transferCommand.execute();
+
+        assertThat(transferCommand.execute()).containsExactly("Must maintain minimum balance of 500");
     }
 }

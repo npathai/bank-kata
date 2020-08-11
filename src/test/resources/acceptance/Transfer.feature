@@ -27,3 +27,14 @@ Feature: Transfer Funds
     And "Alice" has deposited Rs 500 to her account
     When "Alice" transfers Rs 1401 to "Bob"'s account
     Then "Alice" should fail to transfer due to insufficient funds
+
+  Scenario: As a bank, I don't want account holders to be able to transfer
+    amount such that balance goes below minimum amount of 500
+
+    Given "Alice" is an account holder with initial balance of Rs 1000
+    And "Bob" is an account holder
+    And "Alice" has withdrawn Rs 100 from her account
+    And "Alice" has deposited Rs 500 to her account
+    When "Alice" transfers Rs 901 to "Bob"'s account
+    Then "Alice" should fail to transfer amount due to minimum balance requirement
+

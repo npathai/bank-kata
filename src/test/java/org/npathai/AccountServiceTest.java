@@ -105,6 +105,16 @@ class AccountServiceTest {
             assertThatThrownBy(() -> accountService.transfer(transferRequest))
                     .isInstanceOf(InsufficientFundsException.class);
         }
+
+        @Test
+        public void throwsExceptionWhenTriedToWithdrawAmountThatTakesAccountBalanceBelowMinBalance() {
+            accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 2000));
+            TransferRequest transferRequest = new TransferRequest(sourceAccount.accountNo(),
+                    destinationAccount.accountNo(), 1501);
+            Throwable throwable = catchThrowable(() -> accountService.transfer(transferRequest));
+            assertThat(throwable).isInstanceOf(AccountUnderflowException.class);
+            assertThat(((AccountUnderflowException) throwable).minBalance()).isEqualTo(500);
+        }
     }
 
     @Nested
