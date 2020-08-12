@@ -7,11 +7,10 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 class TransferCommandTest {
     final Account fromAccount = new Account("Alice");
@@ -50,12 +49,14 @@ class TransferCommandTest {
     }
 
     @Test
-    public void returnsNothingWhenTransferFails() {
-        doThrow(TransferFailedException.class).when(accountService).transfer(any(TransferRequest.class));
+    public void returnsMessageWhenTransferFailsDueToPayeeAccountClosure() {
+        TransferFailedException transferFailedException = new TransferFailedException(new AccountClosedException());
+        doThrow(transferFailedException).when(accountService).transfer(any(TransferRequest.class));
 
         transferCommand.execute();
 
-        assertThat(transferCommand.execute()).isEmpty();
+        assertThat(transferCommand.execute()).containsExactly("Payee account is closed. " +
+                "Amount will be reversed back to your account.");
     }
 
     @Test

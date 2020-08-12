@@ -153,4 +153,9 @@ public class AccountStepDefs {
     public void shouldFailToTransferAmountDueToMinimumBalanceRequirement(String accountHolderName) {
         assertThat(application.readOutput()).isEqualTo("Must maintain minimum balance of 500");
     }
+
+    @Then("{string} should fail to transfer due to payee account closure")
+    public void shouldFailToTransferDueToPayeeAccountClosure(String accountHolderName) {
+        assertThat(application.readOutput()).isEqualTo("Payee account is closed. Amount will be reversed back to your account.");
+    }
 }

@@ -21,7 +21,7 @@ public class TransferCommand implements Command {
         try {
             accountService.transfer(new TransferRequest(fromAccountNo, toAccountNo, amount));
         } catch (TransferFailedException ex) {
-            // FIXME bad that we are swallowing exception. Add acceptance test to give feedback for failure
+            return List.of("Payee account is closed. Amount will be reversed back to your account.");
         } catch (InsufficientFundsException ex) {
             return List.of("Insufficient funds in account");
         } catch (AccountUnderflowException ex) {
