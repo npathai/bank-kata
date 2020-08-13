@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import intrastructure.Fixture;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -12,6 +13,7 @@ import io.cucumber.java.en.When;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -157,5 +159,19 @@ public class AccountStepDefs {
     @Then("{string} should fail to transfer due to payee account closure")
     public void shouldFailToTransferDueToPayeeAccountClosure(String accountHolderName) {
         assertThat(application.readOutput()).isEqualTo("Payee account is closed. Amount will be reversed back to your account.");
+    }
+
+    @Then("{string} should see statement:")
+    public void shouldSeeStatement(String accountHolderName, DataTable dataTable) {
+        application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " statement");
+        String statement = createStatementFrom(dataTable);
+        assertThat(application.readOutput()).isEqualTo(statement);
+    }
+
+    private String createStatementFrom(DataTable dataTable) {
+        String statement = dataTable.asLists().stream()
+                .map(row -> String.join("||", row))
+                .collect(Collectors.joining(System.lineSeparator()));
+        return statement;
     }
 }
