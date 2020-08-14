@@ -18,7 +18,7 @@ class AccountServiceTest {
 
     @Test
     public void returnsNewlyCreatedAccount() {
-        CreateAccountRequest createAccountRequest = new CreateAccountRequest("Alice");
+        CreateAccountRequest createAccountRequest = new CreateAccountRequest("Alice", false);
         Account account = accountService.createAccount(createAccountRequest);
         assertThat(account.accountHolderName()).isEqualTo("Alice");
         assertThat(account.transactions()).isEmpty();
@@ -31,7 +31,7 @@ class AccountServiceTest {
 
         @BeforeEach
         public void initialize() {
-            account = accountService.createAccount(new CreateAccountRequest("Alice"));
+            account = accountService.createAccount(new CreateAccountRequest("Alice", false));
         }
 
         @Test
@@ -62,8 +62,8 @@ class AccountServiceTest {
 
         @BeforeEach
         public void initialize() {
-            sourceAccount = accountService.createAccount(new CreateAccountRequest("Alice"));
-            destinationAccount = accountService.createAccount(new CreateAccountRequest("Bob"));
+            sourceAccount = accountService.createAccount(new CreateAccountRequest("Alice", false));
+            destinationAccount = accountService.createAccount(new CreateAccountRequest("Bob", false));
         }
 
         @Test
@@ -124,7 +124,7 @@ class AccountServiceTest {
 
         @BeforeEach
         public void initialize() {
-            sourceAccount = accountService.createAccount(new CreateAccountRequest("Alice"));
+            sourceAccount = accountService.createAccount(new CreateAccountRequest("Alice", false));
         }
 
         @Test
@@ -150,7 +150,7 @@ class AccountServiceTest {
 
         @BeforeEach
         public void initialize() {
-            account = accountService.createAccount(new CreateAccountRequest("Alice"));
+            account = accountService.createAccount(new CreateAccountRequest("Alice", false));
             accountService.depositAccount(new DepositRequest(account.accountNo(), 2000));
             accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 1000));
             accountService.depositAccount(new DepositRequest(account.accountNo(), 3000));
@@ -183,7 +183,7 @@ class AccountServiceTest {
 
         @BeforeEach
         public void initialize() {
-            account = accountService.createAccount(new CreateAccountRequest("Alice"));
+            account = accountService.createAccount(new CreateAccountRequest("Alice", false));
             accountService.depositAccount(new DepositRequest(account.accountNo(), 1000));
             accountService.depositAccount(new DepositRequest(account.accountNo(), 500));
         }

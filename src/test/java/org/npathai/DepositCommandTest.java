@@ -12,7 +12,7 @@ import static org.mockito.Mockito.*;
 
 class DepositCommandTest {
 
-    static final Account ACCOUNT = new Account("Alice");
+    static final Account ACCOUNT = new Account("Alice", Account.MIN_BALANCE);
     static final String DEPOSIT_AMOUNT_COMMAND = ACCOUNT.accountNo() + " deposit " + 1000;
 
     @Mock

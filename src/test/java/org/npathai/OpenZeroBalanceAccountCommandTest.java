@@ -2,6 +2,8 @@ package org.npathai;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -12,13 +14,16 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class OpenAccountCommandTest {
+class OpenZeroBalanceAccountCommandTest {
 
-    private static final Account ACCOUNT = new Account("Alice", Account.MIN_BALANCE);
-    private static final String OPEN_ACCOUNT_COMMAND = "open account Alice";
+    private static final Account ACCOUNT = new Account("Alice", 0);
+    private static final String OPEN_ZERO_BALANCE_ACCOUNT_COMMAND = "open zero balance account Alice";
 
     @Mock
     AccountService accountService;
+
+    @Captor
+    ArgumentCaptor<CreateAccountRequest> requestArgumentCaptor;
 
     @BeforeEach
     public void initialize() {
@@ -27,11 +32,12 @@ class OpenAccountCommandTest {
 
     @Test
     public void returnsAccountNoOfNewlyOpenedAccount() {
-        OpenAccountCommand openAccountCommand = new OpenAccountCommand(OPEN_ACCOUNT_COMMAND, accountService);
+        OpenZeroBalanceAccountCommand openAccountCommand = new OpenZeroBalanceAccountCommand(OPEN_ZERO_BALANCE_ACCOUNT_COMMAND, accountService);
         when(accountService.createAccount(any(CreateAccountRequest.class))).thenReturn(ACCOUNT);
         List<String> output = openAccountCommand.execute();
 
-        verify(accountService).createAccount(any(CreateAccountRequest.class));
+        verify(accountService).createAccount(requestArgumentCaptor.capture());
         assertThat(output).isEqualTo(List.of(ACCOUNT.accountNo()));
+        assertThat(requestArgumentCaptor.getValue().isZeroBalance()).isTrue();
     }
 }

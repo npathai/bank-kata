@@ -5,15 +5,17 @@ import java.util.List;
 import java.util.UUID;
 
 public class Account {
-    private static final int MIN_BALANCE = 500;
+    public static final int MIN_BALANCE = 500;
 
     private String accountNo = UUID.randomUUID().toString();
     private final String accountHolderName;
+    private final int minBalance;
     private List<AccountTransaction> transactionList = new ArrayList<>();
     private boolean closed;
 
-    public Account(String accountHolderName) {
+    public Account(String accountHolderName, int minBalance) {
         this.accountHolderName = accountHolderName;
+        this.minBalance = minBalance;
     }
 
     public void deposit(long amount) {

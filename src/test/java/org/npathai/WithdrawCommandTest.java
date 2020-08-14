@@ -13,7 +13,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 class WithdrawCommandTest {
-    static final Account ACCOUNT = new Account("Alice");
+    static final Account ACCOUNT = new Account("Alice", Account.MIN_BALANCE);
     static final String WITHDRAW_AMOUNT_COMMAND = ACCOUNT.accountNo() + " withdraw " + 1000;
 
     @Mock

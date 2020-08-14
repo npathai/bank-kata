@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 class CloseCommandTest {
-    static final Account ACCOUNT = new Account("Alice");
+    static final Account ACCOUNT = new Account("Alice", Account.MIN_BALANCE);
     static final String COMMAND = "close " + ACCOUNT.accountNo();
 
     @Mock

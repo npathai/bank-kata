@@ -13,8 +13,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 class TransferCommandTest {
-    final Account fromAccount = new Account("Alice");
-    final Account toAccount = new Account("Bob");
+    final Account fromAccount = new Account("Alice", Account.MIN_BALANCE);
+    final Account toAccount = new Account("Bob", Account.MIN_BALANCE);
 
     @Mock
     AccountService accountService;

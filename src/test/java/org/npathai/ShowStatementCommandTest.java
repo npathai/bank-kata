@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 
 class ShowStatementCommandTest {
 
-    static final Account ACCOUNT = new Account("Alice");
+    static final Account ACCOUNT = new Account("Alice", Account.MIN_BALANCE);
     static final String SHOW_STATEMENT_COMMAND = ACCOUNT.accountNo() + " statement";
     static final String SHOW_STATEMENT_WITH_FILTER_COMMAND = ACCOUNT.accountNo() + " statement --type C";
 
