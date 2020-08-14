@@ -10,7 +10,7 @@ public class AccountService {
     private Map<String, Account> accountByAccountNo = new HashMap<>();
 
     public Account createAccount(CreateAccountRequest request) {
-        Account account = new Account(request.accountHolderName(), Account.MIN_BALANCE);
+        Account account = new Account(request.accountHolderName(), request.isZeroBalance() ? 0 : Account.MIN_BALANCE);
         accountByAccountNo.put(account.accountNo(), account);
         return account;
     }

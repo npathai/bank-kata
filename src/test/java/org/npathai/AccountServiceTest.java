@@ -196,4 +196,24 @@ class AccountServiceTest {
             assertThat(((AccountUnderflowException) throwable).minBalance()).isEqualTo(500);
         }
     }
+
+    @Nested
+    public class ZeroBalanceAccount {
+
+        private Account account;
+
+        @BeforeEach
+        public void initialize() {
+            account = accountService.createAccount(new CreateAccountRequest("Alice", true));
+            accountService.depositAccount(new DepositRequest(account.accountNo(), 1000));
+            accountService.depositAccount(new DepositRequest(account.accountNo(), 500));
+        }
+
+        @Test
+        public void canWithdrawWholeAmount() {
+            account.withdraw(1500);
+            List<AccountTransaction> statement = accountService.getStatement(new ShowStatementRequest(account.accountNo()));
+            assertThat(statement).contains(new AccountTransaction(TransactionType.DEBIT, 1500));
+        }
+    }
 }

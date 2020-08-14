@@ -32,7 +32,7 @@ public class Account {
         if (balance() < amount) {
             throw new InsufficientFundsException();
         }
-        if (balance() - amount < MIN_BALANCE) {
+        if (balance() - amount < minBalance) {
             throw new AccountUnderflowException(MIN_BALANCE);
         }
         transactionList.add(new AccountTransaction(TransactionType.DEBIT, amount));
