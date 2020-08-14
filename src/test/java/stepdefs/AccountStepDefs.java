@@ -185,4 +185,14 @@ public class AccountStepDefs {
     public void isAllowedToWithdrawTheAmount(String accountHolderName) {
         // TODO make withdraw amount return success and failure message
     }
+
+    @When("{string} enters incorrect command")
+    public void entersIncorrectCommand(String accountHolderName) {
+        application.willReceive("unknown command");
+    }
+
+    @Then("{string} should see unknown command failure message")
+    public void shouldSeeUnknownCommandFailureMessage(String accountHolderName) {
+        assertThat(application.readOutput()).isEqualTo("Unknown command");
+    }
 }

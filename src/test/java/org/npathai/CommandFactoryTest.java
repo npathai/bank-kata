@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CommandFactoryTest {
     static final String ACCOUNT_NO = UUID.randomUUID().toString();
@@ -69,5 +70,10 @@ class CommandFactoryTest {
     @Test
     public void returnsOpenZeroBalanceAccountCommand() {
         assertThat(commandFactory.createCommand(OPEN_ZERO_BALANCE_ACCOUNT_COMMAND)).isInstanceOf(OpenZeroBalanceAccountCommand.class);
+    }
+    
+    @Test
+    public void throwsUnknownCommandExceptionWhenCommandIsUnknown() {
+        assertThatThrownBy(() -> commandFactory.createCommand("unknown")).isInstanceOf(UnknownCommandException.class);
     }
 }

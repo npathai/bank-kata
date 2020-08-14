@@ -24,7 +24,7 @@ public class CommandFactory {
         } else if (command.startsWith("close ")) {
             return new CloseCommand(command, accountService);
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnknownCommandException();
         }
     }
 }
