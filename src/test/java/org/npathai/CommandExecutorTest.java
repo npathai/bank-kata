@@ -9,6 +9,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 class CommandExecutorTest {
@@ -35,9 +36,8 @@ class CommandExecutorTest {
     }
     
     @Test
-    public void returnsNoResponseWhenThereIsNoMatchingCommand() {
-        when(commandFactory.createCommand(COMMAND)).thenReturn(null);
-
-        assertThat(commandExecutor.executeCommand(COMMAND)).isEmpty();
+    public void gracefullyHandlesWhenCommandIsUnknown() {
+        doThrow(UnknownCommandException.class).when(commandFactory).createCommand(COMMAND);
+        assertThat(commandExecutor.executeCommand(COMMAND)).containsExactly("Unknown command");
     }
 }

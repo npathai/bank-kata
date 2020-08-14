@@ -1,6 +1,5 @@
 package org.npathai;
 
-import java.util.Collections;
 import java.util.List;
 
 public class CommandExecutor {
@@ -12,10 +11,11 @@ public class CommandExecutor {
     }
 
     public List<String> executeCommand(String commandStr) {
-        Command command = commandFactory.createCommand(commandStr);
-        if (command == null) {
-            return Collections.emptyList();
+        try {
+            Command command = commandFactory.createCommand(commandStr);
+            return command.execute();
+        } catch (UnknownCommandException ex) {
+            return List.of("Unknown command");
         }
-        return command.execute();
     }
 }
