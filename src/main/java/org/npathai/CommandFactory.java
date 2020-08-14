@@ -11,6 +11,8 @@ public class CommandFactory {
     public Command createCommand(String command) {
         if (command.startsWith("open account")) {
             return new OpenAccountCommand(command, accountService);
+        } else if (command.startsWith("open zero balance account")) {
+            return new OpenZeroBalanceAccountCommand();
         } else if (command.contains(" deposit ")) {
             return new DepositCommand(command, accountService);
         } else if (command.contains(" withdraw ")) {

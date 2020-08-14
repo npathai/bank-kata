@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CommandFactoryTest {
     static final String ACCOUNT_NO = UUID.randomUUID().toString();
     static final String OPEN_ACCOUNT_COMMAND = "open account Alice";
+    static final String OPEN_ZERO_BALANCE_ACCOUNT_COMMAND = "open zero balance account Alice";
     static final String WITHDRAW_COMMAND = ACCOUNT_NO + " withdraw 1000";
     static final String DEPOSIT_COMMAND = ACCOUNT_NO + " deposit 1000";
     static final String SHOW_STATEMENT_COMMAND = ACCOUNT_NO + " statement";
@@ -63,5 +64,10 @@ class CommandFactoryTest {
     @Test
     public void returnsCloseAccountCommand() {
         assertThat(commandFactory.createCommand(CLOSE_COMMAND)).isInstanceOf(CloseCommand.class);
+    }
+
+    @Test
+    public void returnsOpenZeroBalanceAccountCommand() {
+        assertThat(commandFactory.createCommand(OPEN_ZERO_BALANCE_ACCOUNT_COMMAND)).isInstanceOf(OpenZeroBalanceAccountCommand.class);
     }
 }
