@@ -174,4 +174,15 @@ public class AccountStepDefs {
                 .collect(Collectors.joining(System.lineSeparator()));
         return statement;
     }
+
+    @Given("{string} is a zero balance account holder")
+    public void isAZeroBalanceAccountHolder(String accountHolderName) {
+        application.willReceive("open zero balance account " + accountHolderName);
+        accountNoByAccountHolderName.put(accountHolderName, application.readOutput());
+    }
+
+    @Then("{string} is allowed to withdraw the amount")
+    public void isAllowedToWithdrawTheAmount(String accountHolderName) {
+        // TODO make withdraw amount return success and failure message
+    }
 }
