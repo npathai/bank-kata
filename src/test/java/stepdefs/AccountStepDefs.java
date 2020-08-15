@@ -99,9 +99,9 @@ public class AccountStepDefs {
 
     @Then("{string} cannot make any further transactions from account")
     public void cannotMakeAnyFurtherTransactionsFromAccount(String accountHolderName) {
-        userWithdrawsFromAccount(accountHolderName, 1);
+        application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " withdraw " + 1);
         assertThat(application.readOutput()).isEqualTo("Account is closed, cannot make any transaction");
-        userDepositsToAccount(accountHolderName, 1);
+        application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " deposit " + 1);
         assertThat(application.readOutput()).isEqualTo("Account is closed, cannot make any transaction");
     }
 
@@ -196,5 +196,10 @@ public class AccountStepDefs {
     @Then("{string} should see unknown command failure message")
     public void shouldSeeUnknownCommandFailureMessage(String accountHolderName) {
         assertThat(application.readOutput()).isEqualTo("Unknown command");
+    }
+
+    @When("{string} tries to withdraw Rs {int} from her account")
+    public void triesToWithdrawRsFromHerAccount(String accountHolderName, int amount) {
+        application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " withdraw " + amount);
     }
 }
