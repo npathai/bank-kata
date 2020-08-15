@@ -38,8 +38,8 @@ class WithdrawCommandTest {
     }
 
     @Test
-    public void doesNotReturnAnyValueOnSuccessfulWithdrawal() {
-        assertThat(withdrawCommand.execute()).isEmpty();
+    public void returnsMessageWhenWithdrawalIsSuccessful() {
+        assertThat(withdrawCommand.execute()).containsExactly("Successfully withdrawn Rs 1000");
     }
 
     @Test

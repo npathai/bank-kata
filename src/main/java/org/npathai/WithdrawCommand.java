@@ -20,7 +20,7 @@ public class WithdrawCommand implements Command {
         int amount = Integer.parseInt(parts[2]);
         try {
             accountService.withdrawAccount(new WithdrawRequest(accountNo, amount));
-            return Collections.emptyList();
+            return List.of("Successfully withdrawn Rs " + amount);
         } catch (AccountClosedException ex) {
             return List.of("Account is closed, cannot make any transaction");
         } catch (AccountUnderflowException ex) {
