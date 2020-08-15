@@ -37,8 +37,8 @@ class DepositCommandTest {
     }
 
     @Test
-    public void doesNotReturnAnyValueOnSuccessfulDeposit() {
-        assertThat(depositCommand.execute()).isEmpty();
+    public void returnsMessageWhenDepositIsSuccessful() {
+        assertThat(depositCommand.execute()).containsExactly("Successfully deposited Rs 1000");
     }
 
     @Test

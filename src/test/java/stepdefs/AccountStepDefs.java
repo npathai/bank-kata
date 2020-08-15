@@ -55,11 +55,13 @@ public class AccountStepDefs {
     @When("{string} deposits Rs {int} to her account")
     public void userDepositsToAccount(String accountHolderName, int amount) {
         application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " deposit " + amount);
+        assertThat(application.readOutput()).isEqualTo("Successfully deposited Rs " + amount);
     }
 
     @And("{string} withdraws Rs {int} from her account")
     public void userWithdrawsFromAccount(String accountHolderName, int amount) {
         application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " withdraw " + amount);
+        assertThat(application.readOutput()).isEqualTo("Successfully withdrawn Rs " + amount);
     }
 
     @When("{string} transfers Rs {int} to {string}'s account")
@@ -183,7 +185,7 @@ public class AccountStepDefs {
 
     @Then("{string} is allowed to withdraw the amount")
     public void isAllowedToWithdrawTheAmount(String accountHolderName) {
-        // TODO make withdraw amount return success and failure message
+
     }
 
     @When("{string} enters incorrect command")
