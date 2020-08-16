@@ -23,12 +23,10 @@ public class AccountService {
 
     public void depositAccount(DepositRequest depositRequest) throws AccountClosedException {
         accounts.get(depositRequest.accountNo()).deposit(depositRequest.amount());
-//        accountByAccountNo.get(depositRequest.accountNo()).deposit(depositRequest.amount());
     }
 
     public void withdrawAccount(WithdrawRequest withdrawRequest) throws AccountException {
         accounts.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount());
-//        accountByAccountNo.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount());
     }
 
     public void transfer(TransferRequest transferRequest) throws InsufficientFundsException {

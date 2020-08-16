@@ -202,4 +202,10 @@ public class AccountStepDefs {
     public void triesToWithdrawRsFromHerAccount(String accountHolderName, int amount) {
         application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " withdraw " + amount);
     }
+
+    @Then("{string} should see balance of Rs {int}")
+    public void shouldSeeBalanceOfRs(String accountHolderName, int balance) {
+        application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " balance");
+        assertThat(application.readOutput()).isEqualTo("Balance Rs " + balance);
+    }
 }
