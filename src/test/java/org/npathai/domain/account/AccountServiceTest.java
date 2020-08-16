@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.npathai.command.BalanceRequest;
 
 import java.util.List;
 
@@ -230,4 +231,24 @@ class AccountServiceTest {
             assertThat(statement).contains(new AccountTransaction(TransactionType.DEBIT, 1500));
         }
     }
+
+    @Nested
+    public class AccountBalance {
+
+        private Account account = new Account("Alice", 0);
+
+        @BeforeEach
+        public void initialize() {
+            when(accounts.get(account.accountNo())).thenReturn(account);
+            accountService.depositAccount(new DepositRequest(account.accountNo(), 1000));
+            accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 100));
+            accountService.depositAccount(new DepositRequest(account.accountNo(), 500));
+        }
+
+        @Test
+        public void returnsCurrentAccountBalance() {
+            assertThat(accountService.getBalance(new BalanceRequest(account.accountNo()))).isEqualTo(1400L);
+        }
+    }
+
 }

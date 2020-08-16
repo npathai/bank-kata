@@ -65,6 +65,6 @@ public class AccountService {
     }
 
     public Long getBalance(BalanceRequest balanceRequest) {
-        return 0L;
+        return accounts.get(balanceRequest.accountNo()).balance();
     }
 }
