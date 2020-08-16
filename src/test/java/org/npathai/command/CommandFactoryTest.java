@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.npathai.command.*;
 import org.npathai.domain.account.AccountService;
 
 import java.util.UUID;
@@ -22,6 +21,7 @@ class CommandFactoryTest {
     static final String SHOW_STATEMENT_WITH_FILTER_COMMAND = ACCOUNT_NO + " statement --type C";
     static final String TRANSFER_COMMAND = "transfer " + ACCOUNT_NO + " " + UUID.randomUUID().toString() + " 1000";
     static final String CLOSE_COMMAND = "close " + ACCOUNT_NO;
+    static final String BALANCE_COMMAND = ACCOUNT_NO + " balance";
 
     @Mock
     AccountService accountService;
@@ -73,7 +73,12 @@ class CommandFactoryTest {
     public void returnsOpenZeroBalanceAccountCommand() {
         assertThat(commandFactory.createCommand(OPEN_ZERO_BALANCE_ACCOUNT_COMMAND)).isInstanceOf(OpenZeroBalanceAccountCommand.class);
     }
-    
+
+    @Test
+    public void returnsAccountBalanceCommand() {
+        assertThat(commandFactory.createCommand(BALANCE_COMMAND)).isInstanceOf(BalanceCommand.class);
+    }
+
     @Test
     public void throwsUnknownCommandExceptionWhenCommandIsUnknown() {
         assertThatThrownBy(() -> commandFactory.createCommand("unknown")).isInstanceOf(UnknownCommandException.class);

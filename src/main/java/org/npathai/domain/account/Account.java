@@ -38,7 +38,7 @@ public class Account {
         transactionList.add(new AccountTransaction(TransactionType.DEBIT, amount));
     }
 
-    private long balance() {
+    public long balance() {
         long balance = 0;
         for (AccountTransaction accountTransaction : transactions()) {
             if (accountTransaction.type() == TransactionType.CREDIT) {

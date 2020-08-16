@@ -25,6 +25,8 @@ public class CommandFactory {
             return new TransferCommand(command, accountService);
         } else if (command.startsWith("close ")) {
             return new CloseCommand(command, accountService);
+        } else if (command.endsWith("balance")) {
+            return new BalanceCommand(command, accountService);
         } else {
             throw new UnknownCommandException();
         }

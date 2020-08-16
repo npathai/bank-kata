@@ -1,5 +1,7 @@
 package org.npathai.domain.account;
 
+import org.npathai.command.BalanceRequest;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,5 +62,9 @@ public class AccountService {
 
     public void close(CloseRequest closeRequest) {
         accounts.get(closeRequest.accountNo()).close();
+    }
+
+    public Long getBalance(BalanceRequest balanceRequest) {
+        return 0L;
     }
 }
