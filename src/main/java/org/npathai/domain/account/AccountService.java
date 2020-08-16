@@ -7,25 +7,33 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class AccountService {
+    private final InMemoryAccounts accounts;
     private Map<String, Account> accountByAccountNo = new HashMap<>();
+
+    public AccountService(InMemoryAccounts accounts) {
+        this.accounts = accounts;
+    }
 
     public Account createAccount(CreateAccountRequest request) {
         Account account = new Account(request.accountHolderName(), request.isZeroBalance() ? 0 : Account.MIN_BALANCE);
+        accounts.save(account);
         accountByAccountNo.put(account.accountNo(), account);
         return account;
     }
 
     public void depositAccount(DepositRequest depositRequest) throws AccountClosedException {
-        accountByAccountNo.get(depositRequest.accountNo()).deposit(depositRequest.amount());
+        accounts.get(depositRequest.accountNo()).deposit(depositRequest.amount());
+//        accountByAccountNo.get(depositRequest.accountNo()).deposit(depositRequest.amount());
     }
 
     public void withdrawAccount(WithdrawRequest withdrawRequest) throws AccountException {
-        accountByAccountNo.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount());
+        accounts.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount());
+//        accountByAccountNo.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount());
     }
 
     public void transfer(TransferRequest transferRequest) throws InsufficientFundsException {
-        Account fromAccount = accountByAccountNo.get(transferRequest.fromAccountNo());
-        Account toAccount = accountByAccountNo.get(transferRequest.toAccountNo());
+        Account fromAccount = accounts.get(transferRequest.fromAccountNo());
+        Account toAccount = accounts.get(transferRequest.toAccountNo());
         fromAccount.withdraw(transferRequest.amount());
         try {
             toAccount.deposit(transferRequest.amount());
@@ -37,7 +45,7 @@ public class AccountService {
 
     public List<AccountTransaction> getStatement(ShowStatementRequest showStatementRequest) {
         Predicate<AccountTransaction> typeFilter = typeFilterFrom(showStatementRequest);
-        return accountByAccountNo.get(showStatementRequest.accountNo()).transactions()
+        return accounts.get(showStatementRequest.accountNo()).transactions()
                 .stream()
                 .filter(typeFilter)
                 .collect(Collectors.toList());
@@ -53,6 +61,6 @@ public class AccountService {
     }
 
     public void close(CloseRequest closeRequest) {
-        accountByAccountNo.get(closeRequest.accountNo()).close();
+        accounts.get(closeRequest.accountNo()).close();
     }
 }

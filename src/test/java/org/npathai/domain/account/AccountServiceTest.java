@@ -3,18 +3,24 @@ package org.npathai.domain.account;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.npathai.domain.account.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class AccountServiceTest {
     AccountService accountService;
+    @Mock
+    InMemoryAccounts accounts;
 
     @BeforeEach
     public void initialize() {
-        accountService = new AccountService();
+        MockitoAnnotations.initMocks(this);
+        accountService = new AccountService(accounts);
     }
 
     @Test
@@ -25,14 +31,21 @@ class AccountServiceTest {
         assertThat(account.transactions()).isEmpty();
     }
 
+    @Test
+    public void storesAccount() {
+        CreateAccountRequest createAccountRequest = new CreateAccountRequest("Alice", false);
+        Account account = accountService.createAccount(createAccountRequest);
+        verify(accounts).save(account);
+    }
+
     @Nested
     public class AccountExists {
 
-        private Account account;
+        private Account account = new Account("Alice", 1000);
 
         @BeforeEach
         public void initialize() {
-            account = accountService.createAccount(new CreateAccountRequest("Alice", false));
+            when(accounts.get(account.accountNo())).thenReturn(account);
         }
 
         @Test
@@ -58,13 +71,13 @@ class AccountServiceTest {
 
     @Nested
     class TransferAmount {
-        private Account sourceAccount;
-        private Account destinationAccount;
+        private Account sourceAccount = new Account("Alice", Account.MIN_BALANCE);
+        private Account destinationAccount = new Account("Bob", 0);
 
         @BeforeEach
         public void initialize() {
-            sourceAccount = accountService.createAccount(new CreateAccountRequest("Alice", false));
-            destinationAccount = accountService.createAccount(new CreateAccountRequest("Bob", false));
+            when(accounts.get(sourceAccount.accountNo())).thenReturn(sourceAccount);
+            when(accounts.get(destinationAccount.accountNo())).thenReturn(destinationAccount);
         }
 
         @Test
@@ -121,25 +134,25 @@ class AccountServiceTest {
     @Nested
     public class CloseAccount {
 
-        private Account sourceAccount;
+        private Account account = new Account("Alice", 0);
 
         @BeforeEach
         public void initialize() {
-            sourceAccount = accountService.createAccount(new CreateAccountRequest("Alice", false));
+            when(accounts.get(account.accountNo())).thenReturn(account);
         }
 
         @Test
         public void cannotWithdrawAmountAfterClosingTheAccount() {
-            CloseRequest closeRequest = new CloseRequest(sourceAccount.accountNo());
+            CloseRequest closeRequest = new CloseRequest(account.accountNo());
             accountService.close(closeRequest);
-            assertThatThrownBy(() -> accountService.withdrawAccount(new WithdrawRequest(sourceAccount.accountNo(), 1)))
+            assertThatThrownBy(() -> accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 1)))
                     .isInstanceOf(AccountClosedException.class);
         }
 
         @Test
         public void cannotDepositAmountAfterClosingTheAccount() {
-            accountService.close(new CloseRequest(sourceAccount.accountNo()));
-            assertThatThrownBy(() -> accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 1)))
+            accountService.close(new CloseRequest(account.accountNo()));
+            assertThatThrownBy(() -> accountService.depositAccount(new DepositRequest(account.accountNo(), 1)))
                     .isInstanceOf(AccountClosedException.class);
         }
     }
@@ -147,11 +160,11 @@ class AccountServiceTest {
     @Nested
     public class ShowStatement {
 
-        private Account account;
+        private Account account = new Account("Alice", 0);
 
         @BeforeEach
         public void initialize() {
-            account = accountService.createAccount(new CreateAccountRequest("Alice", false));
+            when(accounts.get(account.accountNo())).thenReturn(account);
             accountService.depositAccount(new DepositRequest(account.accountNo(), 2000));
             accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 1000));
             accountService.depositAccount(new DepositRequest(account.accountNo(), 3000));
@@ -180,11 +193,11 @@ class AccountServiceTest {
     @Nested
     public class WithdrawAmount {
 
-        private Account account;
+        private Account account = new Account("Alice", Account.MIN_BALANCE);
 
         @BeforeEach
         public void initialize() {
-            account = accountService.createAccount(new CreateAccountRequest("Alice", false));
+            when(accounts.get(account.accountNo())).thenReturn(account);
             accountService.depositAccount(new DepositRequest(account.accountNo(), 1000));
             accountService.depositAccount(new DepositRequest(account.accountNo(), 500));
         }
@@ -201,11 +214,11 @@ class AccountServiceTest {
     @Nested
     public class ZeroBalanceAccount {
 
-        private Account account;
+        private Account account = new Account("Alice", 0);
 
         @BeforeEach
         public void initialize() {
-            account = accountService.createAccount(new CreateAccountRequest("Alice", true));
+            when(accounts.get(account.accountNo())).thenReturn(account);
             accountService.depositAccount(new DepositRequest(account.accountNo(), 1000));
             accountService.depositAccount(new DepositRequest(account.accountNo(), 500));
         }

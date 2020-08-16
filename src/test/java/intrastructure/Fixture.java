@@ -4,6 +4,7 @@ import org.npathai.*;
 import org.npathai.command.CommandExecutor;
 import org.npathai.command.CommandFactory;
 import org.npathai.domain.account.AccountService;
+import org.npathai.domain.account.InMemoryAccounts;
 
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.Executors;
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class Fixture {
     BlockingTestingConsole console = new BlockingTestingConsole();
     BankApplication bankApplication = new BankApplication(console,
-            Executors.newSingleThreadExecutor(), new CommandExecutor(new CommandFactory(new AccountService())));
+            Executors.newSingleThreadExecutor(), new CommandExecutor(new CommandFactory(new AccountService(new InMemoryAccounts()))));
 
     public Fixture() {
         bankApplication.start();
