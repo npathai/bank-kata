@@ -8,14 +8,8 @@ Feature: Transfer Funds
     funds online to known payees
 
     When "Alice" transfers Rs 1000 to "Bob"'s account
-    Then "Alice" should see statement:
-    | type | amount |
-    | C  | 2000   |
-    | D  | 1000   |
-
-    And "Bob" should see statement:
-    | type | amount |
-    | C  | 1000   |
+    Then "Alice" account balance should be Rs 1000
+    And "Bob" account balance should be Rs 1000
 
   Scenario: As an account holder, I want amount to be reversed back to my account
     if funds cannot be transferred to payee account and user should be shown helpful message that the amount

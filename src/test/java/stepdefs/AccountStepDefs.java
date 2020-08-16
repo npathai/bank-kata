@@ -208,4 +208,10 @@ public class AccountStepDefs {
         application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " balance");
         assertThat(application.readOutput()).isEqualTo("Balance Rs " + balance);
     }
+
+    @Then("{string} account balance should be Rs {int}")
+    public void accountBalanceShouldBeRs(String accountHolderName, int expectedBalance) {
+        application.willReceive(accountNoByAccountHolderName.get(accountHolderName) + " balance");
+        assertThat(application.readOutput()).isEqualTo("Balance Rs " + expectedBalance);
+    }
 }
