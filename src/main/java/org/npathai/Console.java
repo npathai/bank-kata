@@ -1,12 +1,16 @@
 package org.npathai;
 
+import java.util.Scanner;
+
 public class Console {
+    private Scanner scanner = new Scanner(System.in);
 
-    public void write(String input) {
-
+    public void write(String output) {
+        System.out.println(output);
     }
 
     public String readLine() {
-        return null;
+        System.out.print("> ");
+        return scanner.nextLine();
     }
 }

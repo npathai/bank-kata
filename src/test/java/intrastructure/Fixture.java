@@ -43,8 +43,8 @@ public class Fixture {
         }
 
         @Override
-        public void write(String input) {
-            output.offer(input);
+        public void write(String output) {
+            this.output.offer(output);
         }
 
         void enqueueCommand(String command) {

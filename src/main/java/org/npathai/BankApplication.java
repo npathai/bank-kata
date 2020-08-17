@@ -19,6 +19,7 @@ public class BankApplication {
 
     public void start() {
         executorService.execute(() -> {
+            System.out.println("Started reading commands from command line");
             String command;
             while (!(command = console.readLine()).equals("q")) {
                 List<String> outputLines = commandExecutor.executeCommand(command);
