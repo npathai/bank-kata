@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 public class Fixture {
+
     BlockingTestingConsole console = new BlockingTestingConsole();
     BankApplication bankApplication = new BankApplication(console,
             Executors.newSingleThreadExecutor(), new CommandExecutor(new CommandFactory(new AccountService(new InMemoryAccounts()))));
