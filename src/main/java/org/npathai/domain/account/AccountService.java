@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 public class AccountService {
     private final InMemoryAccounts accounts;
-    private Map<String, Account> accountByAccountNo = new HashMap<>();
 
     public AccountService(InMemoryAccounts accounts) {
         this.accounts = accounts;
@@ -19,7 +18,6 @@ public class AccountService {
     public Account createAccount(CreateAccountRequest request) {
         Account account = new Account(request.accountHolderName(), request.isZeroBalance() ? 0 : Account.MIN_BALANCE);
         accounts.save(account);
-        accountByAccountNo.put(account.accountNo(), account);
         return account;
     }
 

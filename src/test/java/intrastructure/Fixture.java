@@ -18,6 +18,7 @@ public class Fixture {
             Executors.newSingleThreadExecutor(), new CommandExecutor(new CommandFactory(new AccountService(new InMemoryAccounts()))));
 
     public Fixture() {
+        System.out.println("Fixture instance created");
         bankApplication.start();
     }
 
