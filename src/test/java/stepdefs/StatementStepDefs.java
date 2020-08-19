@@ -25,22 +25,17 @@ public class StatementStepDefs {
         this.accountHolder = accountHolder;
     }
 
-    @When("{string} sees account statement filtered by type {string}")
-    public void seesAccountStatementFilteredByType(String accountHolderName, String transactionType) {
-        application.willReceive(accountHolder.getAccountNoByName(accountHolderName) + " statement --type "
-                + toStatementType(transactionType));
+    @And("{string} opens account statement")
+    public void opensAccountStatement(String accountHolderName) {
+        application.willReceive(accountHolder.getAccountNoByName(accountHolderName) + " statement");
         statement = allTransactions(application.readOutput());
     }
 
-    @Then("{string} can see account statement containing {int} transactions of type {string}")
-    public void canSeeAccountStatementContainingTransactionsOfType(String accountHolderName, int count,
-                                                                   String transactionType) {
-        // Doing size - 1 to remove the statement header
-        assertThat(statement.size() - 1).isEqualTo(count);
-        String statementType = toStatementType(transactionType);
-        for (int i = 1; i < count; i++) {
-            assertThat(statement.get(i)).contains(statementType);
-        }
+    @When("{string} opens account statement filtered by type {string}")
+    public void opensAccountStatementFilteredByType(String accountHolderName, String transactionType) {
+        application.willReceive(accountHolder.getAccountNoByName(accountHolderName) + " statement --type "
+                + toStatementType(transactionType));
+        statement = allTransactions(application.readOutput());
     }
 
     @Then("{string} should see a withdrawal of Rs {int} in account")
@@ -57,21 +52,14 @@ public class StatementStepDefs {
         return ImmutableList.copyOf(Splitter.on(System.lineSeparator()).split(output));
     }
 
-    @And("{string} should see a credit of Rs {int} in account")
-    public void shouldSeeACreditOfInAccount(String accountHolderName, int amount) {
-        application.willReceive(accountHolder.getAccountNoByName(accountHolderName) + " statement");
-        assertThat(allTransactions(application.readOutput())).contains("C||" + amount);
-    }
-
     private String toStatementType(String transactionType) {
         return "deposit".equals(transactionType) ? "C" : "D";
     }
 
     @Then("{string} should see statement:")
     public void shouldSeeStatement(String accountHolderName, DataTable dataTable) {
-        application.willReceive(accountHolder.getAccountNoByName(accountHolderName) + " statement");
-        String statement = createStatementFrom(dataTable);
-        assertThat(application.readOutput()).isEqualTo(statement);
+        String expectedStatement = createStatementFrom(dataTable);
+        assertThat(statement).isEqualTo(allTransactions(expectedStatement));
     }
 
     private String createStatementFrom(DataTable dataTable) {
@@ -79,17 +67,5 @@ public class StatementStepDefs {
                 .map(row -> String.join("||", row))
                 .collect(Collectors.joining(System.lineSeparator()));
         return statement;
-    }
-
-    @Then("{string} can see account statement containing all the transactions \\(in order they occurred)")
-    public void verify_can_see_account_statement(String accountHolderName) {
-        application.willReceive(accountHolder.getAccountNoByName(accountHolderName) + " statement");
-        String statement = Joiner.on(System.lineSeparator()).join(List.of(
-                "type||amount",
-                "C||1000",
-                "C||500",
-                "D||100"
-        ));
-        assertThat(application.readOutput()).isEqualTo(statement);
     }
 }

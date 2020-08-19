@@ -18,7 +18,7 @@ Feature: Transfer Funds
     Given "Bob" has closed the account
     When "Alice" transfers Rs 1000 to "Bob"'s account
     Then "Alice" should fail to transfer due to payee account closure
-    And "Alice" should see balance of Rs 1000
+    And "Alice" should see balance of Rs 2000
 
   Scenario: As a bank, I don't want account holders to be able to transfer more than
     current balance in account

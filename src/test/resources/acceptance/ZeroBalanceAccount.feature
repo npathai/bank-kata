@@ -12,7 +12,4 @@ Feature: Zero balance account
     And "Alice" has deposited Rs 100 to her account
     When "Alice" withdraws Rs 100 from her account
     Then "Alice" is allowed to withdraw the amount
-    And "Alice" should see statement:
-    | type | amount |
-    | C    | 100    |
-    | D    | 100    |
+    And "Alice" should see balance of Rs 0
