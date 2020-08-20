@@ -2,6 +2,7 @@ package org.npathai;
 
 import com.google.common.base.Joiner;
 import org.npathai.command.CommandExecutor;
+import org.npathai.command.CommandResponse;
 
 import java.util.*;
 import java.util.concurrent.Executor;
@@ -22,11 +23,11 @@ public class BankApplication {
             System.out.println("Started reading commands from command line");
             String command;
             while (!(command = console.readLine()).equals("q")) {
-                List<String> outputLines = commandExecutor.executeCommand(command);
-                if (outputLines.isEmpty()) {
+                CommandResponse commandResponse = commandExecutor.executeCommand(command);
+                if (commandResponse.isEmpty()) {
                     continue;
                 }
-                String output = Joiner.on(System.lineSeparator()).join(outputLines);
+                String output = Joiner.on(System.lineSeparator()).join(commandResponse.lines());
                 console.write(output);
             }
         });

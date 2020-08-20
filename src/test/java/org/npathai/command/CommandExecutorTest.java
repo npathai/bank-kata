@@ -27,17 +27,19 @@ class CommandExecutorTest {
     }
 
     @Test
-    public void executesAndReturnsOutputOfCommandWhenThereIsAMatchingOne() {
+    public void executesAndReturnsResponseOfCommandWhenThereIsAMatchingOne() {
         Command command = Mockito.mock(Command.class);
         when(commandFactory.createCommand(COMMAND)).thenReturn(command);
         when(command.execute()).thenReturn(List.of("Account created"));
 
-        assertThat(commandExecutor.executeCommand(COMMAND)).isEqualTo(List.of("Account created"));
+        CommandResponse expectedCommandResponse = new CommandResponse("Account created");
+        assertThat(commandExecutor.executeCommand(COMMAND)).isEqualTo(expectedCommandResponse);
     }
     
     @Test
     public void gracefullyHandlesWhenCommandIsUnknown() {
         doThrow(UnknownCommandException.class).when(commandFactory).createCommand(COMMAND);
-        assertThat(commandExecutor.executeCommand(COMMAND)).containsExactly("Unknown command");
+        CommandResponse commandResponse = new CommandResponse("Unknown command");
+        assertThat(commandExecutor.executeCommand(COMMAND)).isEqualTo(commandResponse);
     }
 }

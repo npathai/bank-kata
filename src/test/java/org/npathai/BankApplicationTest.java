@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.npathai.command.CommandExecutor;
+import org.npathai.command.CommandResponse;
 
 import java.util.Collections;
 import java.util.List;
@@ -53,18 +54,20 @@ class BankApplicationTest {
     @Test
     public void shouldReadFromConsoleTillQuitCommand() {
         given(mockConsole.readLine()).willReturn(COMMAND_1, COMMAND_2, QUIT);
-
+        given(commandExecutor.executeCommand(anyString())).willReturn(new CommandResponse("Dummy response"));
         bankApplication.start();
 
         InOrder inOrder = Mockito.inOrder(commandExecutor);
         inOrder.verify(commandExecutor).executeCommand(COMMAND_1);
         inOrder.verify(commandExecutor).executeCommand(COMMAND_2);
+
+        verify(commandExecutor, never()).executeCommand(QUIT);
     }
 
     @Test
     public void writesTheOutputProducedByCommandToConsoleAsASingleLineSeparatedByNewLine() {
         given(mockConsole.readLine()).willReturn(COMMAND_1, QUIT);
-        given(commandExecutor.executeCommand(COMMAND_1)).willReturn(List.of("Output Value 1", "Output Value 2"));
+        given(commandExecutor.executeCommand(COMMAND_1)).willReturn(new CommandResponse(List.of("Output Value 1", "Output Value 2")));
 
         bankApplication.start();
 
@@ -74,7 +77,7 @@ class BankApplicationTest {
     @Test
     public void doesNotWriteAnythingToConsoleWhenCommandDoesntReturnAnyOutput() {
         given(mockConsole.readLine()).willReturn(COMMAND_1, QUIT);
-        given(commandExecutor.executeCommand(COMMAND_1)).willReturn(Collections.emptyList());
+        given(commandExecutor.executeCommand(COMMAND_1)).willReturn(new CommandResponse(Collections.emptyList()));
 
         bankApplication.start();
 
