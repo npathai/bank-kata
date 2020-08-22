@@ -7,6 +7,11 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AccountStepDefs {
@@ -32,15 +37,44 @@ public class AccountStepDefs {
         userDepositsToAccount(accountHolderName, initialBalance);
     }
 
+    @Given("{string} is an account holder with initial balance of Rs {int} on {string}")
+    public void alice_is_an_account_holder_on(String accountHolderName, int initialBalance, String createdOn) {
+        LocalDateTime createdOnTime = timeFrom(createdOn);
+        application.willReceive("open account " + accountHolderName, createdOnTime);
+        accountHolder.saveAccount(accountHolderName, application.readOutput());
+        userDepositsToAccount(accountHolderName, initialBalance);
+    }
+
+    private LocalDateTime timeFrom(String dateStr) {
+        LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        return LocalDateTime.of(date, LocalTime.of(0, 0, 0));
+    }
+
     @When("{string} deposits Rs {int} to her account")
     public void userDepositsToAccount(String accountHolderName, int amount) {
         application.willReceive(accountHolder.getAccountNoByName(accountHolderName) + " deposit " + amount);
         assertThat(application.readOutput()).isEqualTo("Successfully deposited Rs " + amount);
     }
 
-    @And("{string} withdraws Rs {int} from her account")
+    @When("{string} deposits Rs {int} to her account on {string}")
+    public void depositsRsToHerAccountOn(String accountHolderName, int amount, String depositedOn) {
+        LocalDateTime localDateTime = timeFrom(depositedOn);
+        application.willReceive(accountHolder.getAccountNoByName(accountHolderName) + " deposit " + amount,
+                localDateTime);
+        assertThat(application.readOutput()).isEqualTo("Successfully deposited Rs " + amount);
+    }
+
+    @When("{string} withdraws Rs {int} from her account")
     public void userWithdrawsFromAccount(String accountHolderName, int amount) {
         application.willReceive(accountHolder.getAccountNoByName(accountHolderName) + " withdraw " + amount);
+        assertThat(application.readOutput()).isEqualTo("Successfully withdrawn Rs " + amount);
+    }
+
+    @When("{string} withdraws Rs {int} from her account on {string}")
+    public void withdrawsRsFromHerAccountOn(String accountHolderName, int amount, String withdrawnOn) {
+        LocalDateTime localDateTime = timeFrom(withdrawnOn);
+        application.willReceive(accountHolder.getAccountNoByName(accountHolderName) + " withdraw " + amount,
+                localDateTime);
         assertThat(application.readOutput()).isEqualTo("Successfully withdrawn Rs " + amount);
     }
 
