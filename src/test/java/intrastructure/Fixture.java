@@ -16,11 +16,13 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 public class Fixture {
-    MutableClock mutableClock = Mockito.spy(new MutableClock());
+    MutableClock mutableClock = new MutableClock();
     final ZonedDateTime NOW = ZonedDateTime.now(mutableClock);
     BlockingTestingConsole console = new BlockingTestingConsole();
     BankApplication bankApplication = new BankApplication(console,
-            Executors.newSingleThreadExecutor(), new CommandExecutor(new CommandFactory(new AccountService(new InMemoryAccounts()))));
+            Executors.newSingleThreadExecutor(), new CommandExecutor(new CommandFactory(
+                    new AccountService(new InMemoryAccounts(), mutableClock)))
+    );
 
     public Fixture() {
         bankApplication.start();

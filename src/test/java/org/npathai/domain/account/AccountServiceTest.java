@@ -1,5 +1,6 @@
 package org.npathai.domain.account;
 
+import intrastructure.MutableClock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,11 +18,12 @@ class AccountServiceTest {
     AccountService accountService;
     @Mock
     InMemoryAccounts accounts;
+    MutableClock mutableClock = new MutableClock();
 
     @BeforeEach
     public void initialize() {
         MockitoAnnotations.initMocks(this);
-        accountService = new AccountService(accounts);
+        accountService = new AccountService(accounts, mutableClock);
     }
 
     @Test

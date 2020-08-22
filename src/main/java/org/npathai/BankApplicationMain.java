@@ -5,6 +5,7 @@ import org.npathai.command.CommandFactory;
 import org.npathai.domain.account.AccountService;
 import org.npathai.domain.account.InMemoryAccounts;
 
+import java.time.Clock;
 import java.util.concurrent.Executors;
 
 public class BankApplicationMain {
@@ -12,7 +13,7 @@ public class BankApplicationMain {
     public static void main(String[] args) throws InterruptedException {
         BankApplication bankApplication = new BankApplication(new Console(),
                 Executors.newSingleThreadExecutor(),
-                new CommandExecutor(new CommandFactory(new AccountService(new InMemoryAccounts()))));
+                new CommandExecutor(new CommandFactory(new AccountService(new InMemoryAccounts(), Clock.systemDefaultZone()))));
         bankApplication.start();
         Thread.currentThread().join();
     }

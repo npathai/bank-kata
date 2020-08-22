@@ -2,6 +2,7 @@ package org.npathai.domain.account;
 
 import org.npathai.command.BalanceRequest;
 
+import java.time.Clock;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 public class AccountService {
     private final InMemoryAccounts accounts;
 
-    public AccountService(InMemoryAccounts accounts) {
+    public AccountService(InMemoryAccounts accounts, Clock clock) {
         this.accounts = accounts;
     }
 
