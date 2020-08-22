@@ -27,8 +27,6 @@ class TransferCommandTest {
     @BeforeEach
     public void initialize() {
         MockitoAnnotations.initMocks(this);
-        // ensure initial balance
-        fromAccount.deposit(1000);
         command = String.format("transfer %s %s %d", fromAccount.accountNo(), toAccount.accountNo(), 1000);
         transferCommand = new TransferCommand(command, accountService);
     }

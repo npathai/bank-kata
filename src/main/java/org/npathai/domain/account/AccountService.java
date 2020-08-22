@@ -3,6 +3,7 @@ package org.npathai.domain.account;
 import org.npathai.command.BalanceRequest;
 
 import java.time.Clock;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +12,11 @@ import java.util.stream.Collectors;
 
 public class AccountService {
     private final InMemoryAccounts accounts;
+    private Clock clock;
 
     public AccountService(InMemoryAccounts accounts, Clock clock) {
         this.accounts = accounts;
+        this.clock = clock;
     }
 
     public Account createAccount(CreateAccountRequest request) {
@@ -23,21 +26,21 @@ public class AccountService {
     }
 
     public void depositAccount(DepositRequest depositRequest) throws AccountClosedException {
-        accounts.get(depositRequest.accountNo()).deposit(depositRequest.amount());
+        accounts.get(depositRequest.accountNo()).deposit(depositRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
     }
 
     public void withdrawAccount(WithdrawRequest withdrawRequest) throws AccountException {
-        accounts.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount());
+        accounts.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
     }
 
     public void transfer(TransferRequest transferRequest) throws InsufficientFundsException {
         Account fromAccount = accounts.get(transferRequest.fromAccountNo());
         Account toAccount = accounts.get(transferRequest.toAccountNo());
-        fromAccount.withdraw(transferRequest.amount());
+        fromAccount.withdraw(transferRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
         try {
-            toAccount.deposit(transferRequest.amount());
+            toAccount.deposit(transferRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
         } catch (AccountClosedException ex) {
-            fromAccount.deposit(transferRequest.amount());
+            fromAccount.deposit(transferRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
             throw new TransferFailedException(ex);
         }
     }

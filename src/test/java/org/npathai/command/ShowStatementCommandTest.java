@@ -1,5 +1,6 @@
 package org.npathai.command;
 
+import intrastructure.MutableClock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -8,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.npathai.domain.account.*;
 
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ShowStatementCommandTest {
-
+    MutableClock mutableClock = new MutableClock();
     static final Account ACCOUNT = new Account("Alice", Account.MIN_BALANCE);
     static final String SHOW_STATEMENT_COMMAND = ACCOUNT.accountNo() + " statement";
     static final String SHOW_STATEMENT_WITH_FILTER_COMMAND = ACCOUNT.accountNo() + " statement --type C";
@@ -35,10 +37,10 @@ class ShowStatementCommandTest {
     }
 
     @Test
-    public void showsAllTransactionsInChronologicalOrderOfTheirOccurrence() {
-        AccountTransaction depositTransaction = new AccountTransaction(TransactionType.CREDIT, 1000);
-        AccountTransaction withdrawTransaction = new AccountTransaction(TransactionType.DEBIT, 500);
-        AccountTransaction withdrawTransaction2 = new AccountTransaction(TransactionType.DEBIT, 100);
+    public void showsAllTransactions() {
+        AccountTransaction depositTransaction = new AccountTransaction(TransactionType.CREDIT, 1000, mutableClock.instant().atZone(ZoneId.systemDefault()));
+        AccountTransaction withdrawTransaction = new AccountTransaction(TransactionType.DEBIT, 500, mutableClock.instant().atZone(ZoneId.systemDefault()));
+        AccountTransaction withdrawTransaction2 = new AccountTransaction(TransactionType.DEBIT, 100, mutableClock.instant().atZone(ZoneId.systemDefault()));
 
         when(accountService.getStatement(any(ShowStatementRequest.class))).thenReturn(List.of(depositTransaction,
                 withdrawTransaction, withdrawTransaction2));
@@ -61,8 +63,8 @@ class ShowStatementCommandTest {
     @Test
     public void showsFilteredTransactionsOnTransactionType() {
         showStatementCommand = new ShowStatementCommand(SHOW_STATEMENT_WITH_FILTER_COMMAND, accountService);
-        AccountTransaction depositTransaction = new AccountTransaction(TransactionType.CREDIT, 1000);
-        AccountTransaction depositTransaction2 = new AccountTransaction(TransactionType.CREDIT, 2000);
+        AccountTransaction depositTransaction = new AccountTransaction(TransactionType.CREDIT, 1000, mutableClock.instant().atZone(ZoneId.systemDefault()));
+        AccountTransaction depositTransaction2 = new AccountTransaction(TransactionType.CREDIT, 2000, mutableClock.instant().atZone(ZoneId.systemDefault()));
 
         when(accountService.getStatement(any(ShowStatementRequest.class))).thenReturn(List.of(depositTransaction,
                 depositTransaction2));

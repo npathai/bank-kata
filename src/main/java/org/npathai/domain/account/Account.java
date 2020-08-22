@@ -1,5 +1,6 @@
 package org.npathai.domain.account;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,14 +19,14 @@ public class Account {
         this.minBalance = minBalance;
     }
 
-    public void deposit(long amount) {
+    public void deposit(long amount, ZonedDateTime time) {
         if (closed) {
             throw new AccountClosedException();
         }
-        transactionList.add(new AccountTransaction(TransactionType.CREDIT, amount));
+        transactionList.add(new AccountTransaction(TransactionType.CREDIT, amount, time));
     }
 
-    public void withdraw(int amount) {
+    public void withdraw(int amount, ZonedDateTime time) {
         if (closed) {
             throw new AccountClosedException();
         }
@@ -35,7 +36,7 @@ public class Account {
         if (balance() - amount < minBalance) {
             throw new AccountUnderflowException(MIN_BALANCE);
         }
-        transactionList.add(new AccountTransaction(TransactionType.DEBIT, amount));
+        transactionList.add(new AccountTransaction(TransactionType.DEBIT, amount, time));
     }
 
     public long balance() {

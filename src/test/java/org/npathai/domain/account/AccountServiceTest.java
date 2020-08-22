@@ -8,6 +8,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.npathai.command.BalanceRequest;
 
+import java.time.Duration;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -57,7 +59,7 @@ class AccountServiceTest {
             accountService.depositAccount(depositRequest);
             ShowStatementRequest showStatementRequest = new ShowStatementRequest(account.accountNo());
             assertThat(accountService.getStatement(showStatementRequest))
-                    .isEqualTo(List.of(new AccountTransaction(TransactionType.CREDIT, 1000)));
+                    .isEqualTo(List.of(new AccountTransaction(TransactionType.CREDIT, 1000, mutableClock.instant().atZone(ZoneId.systemDefault()))));
         }
 
         @Test
@@ -68,7 +70,7 @@ class AccountServiceTest {
             accountService.withdrawAccount(withdrawRequest);
 
             assertThat(accountService.getStatement(new ShowStatementRequest(account.accountNo())))
-                    .contains(new AccountTransaction(TransactionType.DEBIT, 1000));
+                    .contains(new AccountTransaction(TransactionType.DEBIT, 1000, mutableClock.instant().atZone(ZoneId.systemDefault())));
         }
     }
 
@@ -91,9 +93,9 @@ class AccountServiceTest {
             accountService.transfer(transferRequest);
 
             assertThat(sourceAccount.transactions())
-                    .contains(new AccountTransaction(TransactionType.DEBIT, 1000));
+                    .contains(new AccountTransaction(TransactionType.DEBIT, 1000, mutableClock.instant().atZone(ZoneId.systemDefault())));
             assertThat(destinationAccount.transactions())
-                    .containsExactly(new AccountTransaction(TransactionType.CREDIT, 1000));
+                    .containsExactly(new AccountTransaction(TransactionType.CREDIT, 1000, mutableClock.instant().atZone(ZoneId.systemDefault())));
         }
 
         @Test
@@ -106,8 +108,10 @@ class AccountServiceTest {
             assertThatThrownBy(() -> accountService.transfer(transferRequest))
                     .isInstanceOf(TransferFailedException.class);
             List<AccountTransaction> transactions = sourceAccount.transactions();
-            assertThat(transactions.get(1)).isEqualTo(new AccountTransaction(TransactionType.DEBIT, 1000));
-            assertThat(transactions.get(2)).isEqualTo(new AccountTransaction(TransactionType.CREDIT, 1000));
+            assertThat(transactions.get(1)).isEqualTo(
+                    new AccountTransaction(TransactionType.DEBIT, 1000, mutableClock.instant().atZone(ZoneId.systemDefault())));
+            assertThat(transactions.get(2)).isEqualTo(
+                    new AccountTransaction(TransactionType.CREDIT, 1000, mutableClock.instant().atZone(ZoneId.systemDefault())));
         }
 
         @Test
@@ -169,27 +173,37 @@ class AccountServiceTest {
         public void initialize() {
             when(accounts.get(account.accountNo())).thenReturn(account);
             accountService.depositAccount(new DepositRequest(account.accountNo(), 2000));
+            mutableClock.advanceBy(Duration.ofDays(1));
             accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 1000));
+            mutableClock.advanceBy(Duration.ofDays(1));
             accountService.depositAccount(new DepositRequest(account.accountNo(), 3000));
+            mutableClock.advanceBy(Duration.ofDays(1));
             accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 100));
         }
 
         @Test
-        public void returnsOnlyCreditedTransactionsInChronologicalOrderWhenTypeFilterIsCredit() {
+        public void returnsOnlyCreditedTransactionsInOrderFromNewestToOldestWhenTypeFilterIsCredit() {
             ShowStatementRequest showStatementRequest = new ShowStatementRequest(account.accountNo());
             showStatementRequest.typeFilter("C");
             List<AccountTransaction> statement = accountService.getStatement(showStatementRequest);
-            assertThat(statement).isEqualTo(List.of(new AccountTransaction(TransactionType.CREDIT, 2000),
-                    new AccountTransaction(TransactionType.CREDIT, 3000)));
+            assertThat(statement).isEqualTo(List.of(
+                    new AccountTransaction(TransactionType.CREDIT, 3000,
+                            mutableClock.instant().minus(Duration.ofDays(1)).atZone(ZoneId.systemDefault())),
+                    new AccountTransaction(TransactionType.CREDIT, 2000,
+                            mutableClock.instant().minus(Duration.ofDays(3)).atZone(ZoneId.systemDefault()))));
         }
 
         @Test
-        public void returnsOnlyWithdrawnTransactionsInChronologicalOrderWhenTypeFilterIsDebit() {
+        public void returnsOnlyWithdrawnTransactionsInOrderFromNewestToOldestWhenTypeFilterIsDebit() {
             ShowStatementRequest showStatementRequest = new ShowStatementRequest(account.accountNo());
             showStatementRequest.typeFilter("D");
             List<AccountTransaction> statement = accountService.getStatement(showStatementRequest);
-            assertThat(statement).isEqualTo(List.of(new AccountTransaction(TransactionType.DEBIT, 1000),
-                    new AccountTransaction(TransactionType.DEBIT, 100)));
+            assertThat(statement).isEqualTo(List.of(
+                    new AccountTransaction(TransactionType.DEBIT, 100,
+                            mutableClock.instant().atZone(ZoneId.systemDefault())),
+                    new AccountTransaction(TransactionType.DEBIT, 1000,
+                            mutableClock.instant().minus(Duration.ofDays(2)).atZone(ZoneId.systemDefault())))
+            );
         }
     }
 
@@ -228,9 +242,10 @@ class AccountServiceTest {
 
         @Test
         public void canWithdrawWholeAmount() {
-            account.withdraw(1500);
+            accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 1500));
             List<AccountTransaction> statement = accountService.getStatement(new ShowStatementRequest(account.accountNo()));
-            assertThat(statement).contains(new AccountTransaction(TransactionType.DEBIT, 1500));
+            assertThat(statement).contains(
+                    new AccountTransaction(TransactionType.DEBIT, 1500, mutableClock.instant().atZone(ZoneId.systemDefault())));
         }
     }
 
