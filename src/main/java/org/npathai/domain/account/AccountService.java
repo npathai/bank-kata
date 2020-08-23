@@ -28,20 +28,25 @@ public class AccountService {
 
     public void depositAccount(DepositRequest depositRequest) throws AccountClosedException {
         accounts.get(depositRequest.accountNo()).deposit(depositRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
+        System.out.println(depositRequest.accountNo() + " deposited with " + depositRequest.amount() + " @ " + clock.instant().atZone(ZoneId.systemDefault()));
     }
 
     public void withdrawAccount(WithdrawRequest withdrawRequest) throws AccountException {
         accounts.get(withdrawRequest.accountNo()).withdraw(withdrawRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
+        System.out.println(withdrawRequest.accountNo() + " withdrawn with " + withdrawRequest.amount() + " @ " + clock.instant().atZone(ZoneId.systemDefault()));
     }
 
     public void transfer(TransferRequest transferRequest) throws InsufficientFundsException {
         Account fromAccount = accounts.get(transferRequest.fromAccountNo());
         Account toAccount = accounts.get(transferRequest.toAccountNo());
         fromAccount.withdraw(transferRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
+        System.out.println(transferRequest.fromAccountNo() + " withdrawn with " + transferRequest.amount() + " @ " + clock.instant().atZone(ZoneId.systemDefault()));
         try {
             toAccount.deposit(transferRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
+            System.out.println(transferRequest.toAccountNo() + " deposited with " + transferRequest.amount() + " @ " + clock.instant().atZone(ZoneId.systemDefault()));
         } catch (AccountClosedException ex) {
             fromAccount.deposit(transferRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
+            System.out.println(transferRequest.fromAccountNo() + " reverse deposited with " + transferRequest.amount() + " @ " + clock.instant().atZone(ZoneId.systemDefault()));
             throw new TransferFailedException(ex);
         }
     }

@@ -1,6 +1,5 @@
 package org.npathai.command;
 
-import org.npathai.command.Command;
 import org.npathai.domain.account.Account;
 import org.npathai.domain.account.AccountService;
 import org.npathai.domain.account.CreateAccountRequest;

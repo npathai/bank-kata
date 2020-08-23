@@ -50,4 +50,8 @@ public class AccountTransaction implements Comparable<AccountTransaction> {
     public int compareTo(AccountTransaction o) {
         return transactionTime.compareTo(o.transactionTime);
     }
+
+    public ZonedDateTime time() {
+        return transactionTime;
+    }
 }

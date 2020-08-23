@@ -10,6 +10,8 @@ import org.mockito.MockitoAnnotations;
 import org.npathai.domain.account.*;
 
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,18 +31,22 @@ class ShowStatementCommandTest {
     @Captor
     ArgumentCaptor<ShowStatementRequest> requestArgumentCaptor;
     ShowStatementCommand showStatementCommand;
+    private String currentDate;
+    private ZonedDateTime currentDateTime;
 
     @BeforeEach
     public void initialize() {
         MockitoAnnotations.initMocks(this);
         showStatementCommand = new ShowStatementCommand(SHOW_STATEMENT_COMMAND, accountService);
+        currentDateTime = mutableClock.instant().atZone(ZoneId.systemDefault());
+        currentDate = currentDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
     @Test
     public void showsAllTransactions() {
-        AccountTransaction depositTransaction = new AccountTransaction(TransactionType.CREDIT, 1000, mutableClock.instant().atZone(ZoneId.systemDefault()));
-        AccountTransaction withdrawTransaction = new AccountTransaction(TransactionType.DEBIT, 500, mutableClock.instant().atZone(ZoneId.systemDefault()));
-        AccountTransaction withdrawTransaction2 = new AccountTransaction(TransactionType.DEBIT, 100, mutableClock.instant().atZone(ZoneId.systemDefault()));
+        AccountTransaction depositTransaction = new AccountTransaction(TransactionType.CREDIT, 1000, currentDateTime);
+        AccountTransaction withdrawTransaction = new AccountTransaction(TransactionType.DEBIT, 500, currentDateTime);
+        AccountTransaction withdrawTransaction2 = new AccountTransaction(TransactionType.DEBIT, 100, currentDateTime);
 
         when(accountService.getStatement(any(ShowStatementRequest.class))).thenReturn(List.of(depositTransaction,
                 withdrawTransaction, withdrawTransaction2));
@@ -50,21 +56,27 @@ class ShowStatementCommandTest {
         verify(accountService).getStatement(requestArgumentCaptor.capture());
         ShowStatementRequest request = requestArgumentCaptor.getValue();
         assertThat(request.typeFilter()).isNull();
-        assertThat(statement).isEqualTo(List.of("type||amount", "C||1000", "D||500", "D||100"));
+
+        assertThat(statement).isEqualTo(List.of(
+                "type||amount||date",
+                "C||1000||" + currentDate,
+                "D||500||" + currentDate,
+                "D||100||" + currentDate));
     }
 
     @Test
     public void returnsEmptyStatementWhenNoTransactionsOnAnAccount() {
         when(accountService.getStatement(new ShowStatementRequest(ACCOUNT.accountNo()))).thenReturn(Collections.emptyList());
 
-        assertThat(showStatementCommand.execute()).isEqualTo(List.of("type||amount"));
+        assertThat(showStatementCommand.execute()).isEqualTo(List.of("type||amount||date"));
     }
 
     @Test
     public void showsFilteredTransactionsOnTransactionType() {
         showStatementCommand = new ShowStatementCommand(SHOW_STATEMENT_WITH_FILTER_COMMAND, accountService);
-        AccountTransaction depositTransaction = new AccountTransaction(TransactionType.CREDIT, 1000, mutableClock.instant().atZone(ZoneId.systemDefault()));
-        AccountTransaction depositTransaction2 = new AccountTransaction(TransactionType.CREDIT, 2000, mutableClock.instant().atZone(ZoneId.systemDefault()));
+        ZonedDateTime currentDateTime = mutableClock.instant().atZone(ZoneId.systemDefault());
+        AccountTransaction depositTransaction = new AccountTransaction(TransactionType.CREDIT, 1000, currentDateTime);
+        AccountTransaction depositTransaction2 = new AccountTransaction(TransactionType.CREDIT, 2000, currentDateTime);
 
         when(accountService.getStatement(any(ShowStatementRequest.class))).thenReturn(List.of(depositTransaction,
                 depositTransaction2));
@@ -74,6 +86,9 @@ class ShowStatementCommandTest {
         verify(accountService).getStatement(requestArgumentCaptor.capture());
         ShowStatementRequest request = requestArgumentCaptor.getValue();
         assertThat(request.typeFilter()).isEqualTo("C");
-        assertThat(statement).isEqualTo(List.of("type||amount", "C||1000", "C||2000"));
+        assertThat(statement).isEqualTo(List.of(
+                "type||amount||date",
+                "C||1000||" + currentDate,
+                "C||2000||" + currentDate));
     }
 }

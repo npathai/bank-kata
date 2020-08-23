@@ -6,6 +6,8 @@ import org.npathai.domain.account.AccountTransaction;
 import org.npathai.domain.account.ShowStatementRequest;
 import org.npathai.domain.account.TransactionType;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,10 +33,16 @@ public class ShowStatementCommand implements Command {
         }
         List<AccountTransaction> transactions = accountService.getStatement(showStatementRequest);
         List<String> statement = new ArrayList<>();
-        statement.add("type||amount");
+        statement.add("type||amount||date");
         for (AccountTransaction transaction : transactions) {
-            statement.add(TransactionType.asString(transaction.type()) + "||" + transaction.amount());
+            statement.add(TransactionType.asString(transaction.type())
+                    + "||" + transaction.amount()
+                    + "||" + format(transaction.time()));
         }
         return statement;
+    }
+
+    private String format(ZonedDateTime time) {
+        return time.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 }

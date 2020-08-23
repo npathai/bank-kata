@@ -42,7 +42,10 @@ public class AccountStepDefs {
         LocalDateTime createdOnTime = timeFrom(createdOn);
         application.willReceive("open account " + accountHolderName, createdOnTime);
         accountHolder.saveAccount(accountHolderName, application.readOutput());
-        userDepositsToAccount(accountHolderName, initialBalance);
+        LocalDateTime localDateTime = timeFrom(createdOn);
+        application.willReceive(accountHolder.getAccountNoByName(accountHolderName) + " deposit " + initialBalance,
+                localDateTime);
+        assertThat(application.readOutput()).isEqualTo("Successfully deposited Rs " + initialBalance);
     }
 
     private LocalDateTime timeFrom(String dateStr) {
