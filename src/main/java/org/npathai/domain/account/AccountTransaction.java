@@ -3,7 +3,7 @@ package org.npathai.domain.account;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
-public class AccountTransaction {
+public class AccountTransaction implements Comparable<AccountTransaction> {
     private TransactionType type;
     private long amount;
     private ZonedDateTime transactionTime;
@@ -44,5 +44,10 @@ public class AccountTransaction {
                 ", amount=" + amount +
                 ", transactionTime=" + transactionTime +
                 '}';
+    }
+
+    @Override
+    public int compareTo(AccountTransaction o) {
+        return transactionTime.compareTo(o.transactionTime);
     }
 }

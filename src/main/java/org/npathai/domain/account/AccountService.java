@@ -4,6 +4,7 @@ import org.npathai.command.BalanceRequest;
 
 import java.time.Clock;
 import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ public class AccountService {
         return accounts.get(showStatementRequest.accountNo()).transactions()
                 .stream()
                 .filter(typeFilter)
+                .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
     }
 
