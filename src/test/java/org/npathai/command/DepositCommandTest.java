@@ -33,7 +33,7 @@ class DepositCommandTest {
 
     @Test
     public void depositsAmountToAccount() {
-        depositCommand.execute();
+        depositCommand.executeNew();
 
         verify(accountService).depositAccount(requestArgumentCaptor.capture());
         assertThat(requestArgumentCaptor.getValue().accountNo()).isEqualTo(ACCOUNT.accountNo());
@@ -42,13 +42,13 @@ class DepositCommandTest {
 
     @Test
     public void returnsMessageWhenDepositIsSuccessful() {
-        assertThat(depositCommand.execute()).containsExactly("Successfully deposited Rs 1000");
+        assertThat(depositCommand.executeNew().lines()).containsExactly("Successfully deposited Rs 1000");
     }
 
     @Test
     public void returnsClosureMessageWhenTriedToDepositAccountAfterClosingAccount() {
         doThrow(AccountClosedException.class).when(accountService).depositAccount(any(DepositRequest.class));
 
-        assertThat(depositCommand.execute()).contains("Account is closed, cannot make any transaction");
+        assertThat(depositCommand.executeNew().lines()).contains("Account is closed, cannot make any transaction");
     }
 }

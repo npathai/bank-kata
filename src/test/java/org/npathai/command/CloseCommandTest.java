@@ -34,7 +34,7 @@ class CloseCommandTest {
 
     @Test
     public void closesTheAccount() {
-        closeCommand.execute();
+        closeCommand.executeNew();
 
         verify(accountService).close(requestArgumentCaptor.capture());
         assertThat(requestArgumentCaptor.getValue().accountNo()).isEqualTo(ACCOUNT.accountNo());
@@ -42,8 +42,8 @@ class CloseCommandTest {
 
     @Test
     public void acknowledgesWithClosureMessage() {
-        List<String> output = closeCommand.execute();
+        CommandResponse output = closeCommand.executeNew();
 
-        assertThat(output).containsExactly("Account closed");
+        assertThat(output.lines()).containsExactly("Account closed");
     }
 }

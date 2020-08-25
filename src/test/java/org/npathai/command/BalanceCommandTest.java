@@ -31,10 +31,10 @@ class BalanceCommandTest {
     public void returnsBalanceOfAccount() {
         BalanceCommand command = new BalanceCommand(BALANCE_COMMAND, accountService);
         when(accountService.getBalance(Mockito.any(BalanceRequest.class))).thenReturn(10000L);
-        List<String> output = command.execute();
+        CommandResponse output = command.executeNew();
 
         verify(accountService).getBalance(requestArgumentCaptor.capture());
-        assertThat(output).containsExactly("Balance Rs " + 10000);
+        assertThat(output.lines()).containsExactly("Balance Rs " + 10000);
         assertThat(requestArgumentCaptor.getValue().accountNo()).isEqualTo(ACCOUNT.accountNo());
     }
 }

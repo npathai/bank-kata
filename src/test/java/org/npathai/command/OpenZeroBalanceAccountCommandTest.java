@@ -37,10 +37,10 @@ class OpenZeroBalanceAccountCommandTest {
     public void returnsAccountNoOfNewlyOpenedAccount() {
         OpenZeroBalanceAccountCommand openAccountCommand = new OpenZeroBalanceAccountCommand(OPEN_ZERO_BALANCE_ACCOUNT_COMMAND, accountService);
         when(accountService.createAccount(any(CreateAccountRequest.class))).thenReturn(ACCOUNT);
-        List<String> output = openAccountCommand.execute();
+        CommandResponse output = openAccountCommand.executeNew();
 
         verify(accountService).createAccount(requestArgumentCaptor.capture());
-        assertThat(output).isEqualTo(List.of(ACCOUNT.accountNo()));
+        assertThat(output.lines()).isEqualTo(List.of(ACCOUNT.accountNo()));
         assertThat(requestArgumentCaptor.getValue().isZeroBalance()).isTrue();
     }
 }

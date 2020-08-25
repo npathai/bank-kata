@@ -31,7 +31,7 @@ class WithdrawCommandTest {
 
     @Test
     public void withdrawsAmountFromAccount() {
-        withdrawCommand.execute();
+        withdrawCommand.executeNew();
 
         verify(accountService).withdrawAccount(requestArgumentCaptor.capture());
         assertThat(requestArgumentCaptor.getValue().accountNo()).isEqualTo(ACCOUNT.accountNo());
@@ -40,14 +40,14 @@ class WithdrawCommandTest {
 
     @Test
     public void returnsMessageWhenWithdrawalIsSuccessful() {
-        assertThat(withdrawCommand.execute()).containsExactly("Successfully withdrawn Rs 1000");
+        assertThat(withdrawCommand.executeNew().lines()).containsExactly("Successfully withdrawn Rs 1000");
     }
 
     @Test
     public void returnsClosureMessageWhenTriedToDepositAccountAfterClosingAccount() {
         doThrow(AccountClosedException.class).when(accountService).withdrawAccount(any(WithdrawRequest.class));
 
-        assertThat(withdrawCommand.execute()).contains("Account is closed, cannot make any transaction");
+        assertThat(withdrawCommand.executeNew().lines()).contains("Account is closed, cannot make any transaction");
     }
     
     @Test
@@ -55,6 +55,6 @@ class WithdrawCommandTest {
         AccountUnderflowException accountUnderflowException = new AccountUnderflowException(500);
         doThrow(accountUnderflowException).when(accountService).withdrawAccount(any(WithdrawRequest.class));
 
-        assertThat(withdrawCommand.execute()).contains("Must maintain minimum balance of 500");
+        assertThat(withdrawCommand.executeNew().lines()).contains("Must maintain minimum balance of 500");
     }
 }

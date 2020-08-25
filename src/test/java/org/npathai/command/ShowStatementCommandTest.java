@@ -51,13 +51,13 @@ class ShowStatementCommandTest {
         when(accountService.getStatement(any(ShowStatementRequest.class))).thenReturn(List.of(depositTransaction,
                 withdrawTransaction, withdrawTransaction2));
 
-        List<String> statement = showStatementCommand.execute();
+        CommandResponse statement = showStatementCommand.executeNew();
 
         verify(accountService).getStatement(requestArgumentCaptor.capture());
         ShowStatementRequest request = requestArgumentCaptor.getValue();
         assertThat(request.typeFilter()).isNull();
 
-        assertThat(statement).isEqualTo(List.of(
+        assertThat(statement.lines()).isEqualTo(List.of(
                 "type||amount||date",
                 "C||1000||" + currentDate,
                 "D||500||" + currentDate,

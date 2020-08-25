@@ -33,7 +33,7 @@ class TransferCommandTest {
 
     @Test
     public void transfersAmountFromSourceToDestinationAccount() {
-        transferCommand.execute();
+        transferCommand.executeNew();
 
         verify(accountService).transfer(requestArgumentCaptor.capture());
         assertThat(requestArgumentCaptor.getValue().fromAccountNo()).isEqualTo(fromAccount.accountNo());
@@ -44,7 +44,7 @@ class TransferCommandTest {
     @Test
     public void returnsNothing() {
         transferCommand = new TransferCommand(command, accountService);
-        assertThat(transferCommand.execute()).isEmpty();
+        assertThat(transferCommand.executeNew().lines()).isEmpty();
     }
 
     @Test
@@ -52,7 +52,7 @@ class TransferCommandTest {
         TransferFailedException transferFailedException = new TransferFailedException(new AccountClosedException());
         doThrow(transferFailedException).when(accountService).transfer(any(TransferRequest.class));
 
-        transferCommand.execute();
+        transferCommand.executeNew();
 
         assertThat(transferCommand.execute()).containsExactly("Payee account is closed. " +
                 "Amount will be reversed back to your account.");
@@ -62,9 +62,9 @@ class TransferCommandTest {
     public void returnsMessageWhenTransferFailsDueToInsufficientFunds() {
         doThrow(InsufficientFundsException.class).when(accountService).transfer(any(TransferRequest.class));
 
-        transferCommand.execute();
+        transferCommand.executeNew();
 
-        assertThat(transferCommand.execute()).containsExactly("Insufficient funds in account");
+        assertThat(transferCommand.executeNew().lines()).containsExactly("Insufficient funds in account");
     }
 
     @Test
@@ -72,8 +72,8 @@ class TransferCommandTest {
         AccountUnderflowException accountUnderflowException = new AccountUnderflowException(500);
         doThrow(accountUnderflowException).when(accountService).transfer(any(TransferRequest.class));
 
-        transferCommand.execute();
+        transferCommand.executeNew();
 
-        assertThat(transferCommand.execute()).containsExactly("Must maintain minimum balance of 500");
+        assertThat(transferCommand.executeNew().lines()).containsExactly("Must maintain minimum balance of 500");
     }
 }
