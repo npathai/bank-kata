@@ -11,7 +11,7 @@ public class CommandExecutor {
     public CommandResponse executeCommand(String commandStr) {
         try {
             Command command = commandFactory.createCommand(commandStr);
-            return new CommandResponse(command.execute());
+            return command.executeNew();
         } catch (UnknownCommandException ex) {
             return new CommandResponse("Unknown command");
         }
