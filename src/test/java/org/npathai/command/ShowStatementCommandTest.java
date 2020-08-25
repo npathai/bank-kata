@@ -51,7 +51,7 @@ class ShowStatementCommandTest {
         when(accountService.getStatement(any(ShowStatementRequest.class))).thenReturn(List.of(depositTransaction,
                 withdrawTransaction, withdrawTransaction2));
 
-        CommandResponse statement = showStatementCommand.executeNew();
+        CommandResponse statement = showStatementCommand.execute();
 
         verify(accountService).getStatement(requestArgumentCaptor.capture());
         ShowStatementRequest request = requestArgumentCaptor.getValue();
@@ -68,7 +68,7 @@ class ShowStatementCommandTest {
     public void returnsEmptyStatementWhenNoTransactionsOnAnAccount() {
         when(accountService.getStatement(new ShowStatementRequest(ACCOUNT.accountNo()))).thenReturn(Collections.emptyList());
 
-        assertThat(showStatementCommand.execute()).isEqualTo(List.of("type||amount||date"));
+        assertThat(showStatementCommand.execute().lines()).isEqualTo(List.of("type||amount||date"));
     }
 
     @Test
@@ -81,12 +81,12 @@ class ShowStatementCommandTest {
         when(accountService.getStatement(any(ShowStatementRequest.class))).thenReturn(List.of(depositTransaction,
                 depositTransaction2));
 
-        List<String> statement = showStatementCommand.execute();
+        CommandResponse statement = showStatementCommand.execute();
 
         verify(accountService).getStatement(requestArgumentCaptor.capture());
         ShowStatementRequest request = requestArgumentCaptor.getValue();
         assertThat(request.typeFilter()).isEqualTo("C");
-        assertThat(statement).isEqualTo(List.of(
+        assertThat(statement.lines()).isEqualTo(List.of(
                 "type||amount||date",
                 "C||1000||" + currentDate,
                 "C||2000||" + currentDate));

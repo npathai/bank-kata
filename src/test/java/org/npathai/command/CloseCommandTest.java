@@ -6,12 +6,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.npathai.command.CloseCommand;
 import org.npathai.domain.account.Account;
 import org.npathai.domain.account.AccountService;
 import org.npathai.domain.account.CloseRequest;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -34,7 +31,7 @@ class CloseCommandTest {
 
     @Test
     public void closesTheAccount() {
-        closeCommand.executeNew();
+        closeCommand.execute();
 
         verify(accountService).close(requestArgumentCaptor.capture());
         assertThat(requestArgumentCaptor.getValue().accountNo()).isEqualTo(ACCOUNT.accountNo());
@@ -42,7 +39,7 @@ class CloseCommandTest {
 
     @Test
     public void acknowledgesWithClosureMessage() {
-        CommandResponse output = closeCommand.executeNew();
+        CommandResponse output = closeCommand.execute();
 
         assertThat(output.lines()).containsExactly("Account closed");
     }

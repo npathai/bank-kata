@@ -1,6 +1,5 @@
 package org.npathai.command;
 
-import org.npathai.command.Command;
 import org.npathai.domain.account.AccountService;
 import org.npathai.domain.account.AccountTransaction;
 import org.npathai.domain.account.ShowStatementRequest;
@@ -23,7 +22,7 @@ public class ShowStatementCommand implements Command {
     }
 
     @Override
-    public List<String> execute() {
+    public CommandResponse execute() {
         String[] parts = command.split(" ");
         String accountNo = parts[0];
         ShowStatementRequest showStatementRequest = new ShowStatementRequest(accountNo);
@@ -39,7 +38,7 @@ public class ShowStatementCommand implements Command {
                     + "||" + transaction.amount()
                     + "||" + format(transaction.time()));
         }
-        return statement;
+        return new CommandResponse(statement);
     }
 
     private String format(ZonedDateTime time) {

@@ -18,10 +18,10 @@ public class OpenZeroBalanceAccountCommand implements Command {
     }
 
     @Override
-    public List<String> execute() {
+    public CommandResponse execute() {
         String[] parts = command.split(" ");
         String accountHolderName = parts[4];
         Account account = accountService.createAccount(new CreateAccountRequest(accountHolderName, true));
-        return List.of(account.accountNo());
+        return new CommandResponse(List.of(account.accountNo()));
     }
 }

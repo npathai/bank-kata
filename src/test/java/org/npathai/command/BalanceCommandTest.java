@@ -6,8 +6,6 @@ import org.mockito.*;
 import org.npathai.domain.account.Account;
 import org.npathai.domain.account.AccountService;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,7 +29,7 @@ class BalanceCommandTest {
     public void returnsBalanceOfAccount() {
         BalanceCommand command = new BalanceCommand(BALANCE_COMMAND, accountService);
         when(accountService.getBalance(Mockito.any(BalanceRequest.class))).thenReturn(10000L);
-        CommandResponse output = command.executeNew();
+        CommandResponse output = command.execute();
 
         verify(accountService).getBalance(requestArgumentCaptor.capture());
         assertThat(output.lines()).containsExactly("Balance Rs " + 10000);

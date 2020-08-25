@@ -15,10 +15,10 @@ public class CloseCommand implements Command {
     }
 
     @Override
-    public List<String> execute() {
+    public CommandResponse execute() {
         String[] parts = command.split(" ");
         String accountNo = parts[1];
         accountService.close(new CloseRequest(accountNo));
-        return List.of("Account closed");
+        return new CommandResponse(List.of("Account closed"));
     }
 }

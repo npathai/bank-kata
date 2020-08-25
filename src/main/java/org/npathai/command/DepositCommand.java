@@ -1,6 +1,5 @@
 package org.npathai.command;
 
-import org.npathai.command.Command;
 import org.npathai.domain.account.AccountClosedException;
 import org.npathai.domain.account.AccountService;
 import org.npathai.domain.account.DepositRequest;
@@ -18,15 +17,15 @@ public class DepositCommand implements Command {
     }
 
     @Override
-    public List<String> execute() {
+    public CommandResponse execute() {
         String[] parts = command.split(" ");
         String accountNo = parts[0];
         int amount = Integer.parseInt(parts[2]);
         try {
             accountService.depositAccount(new DepositRequest(accountNo, amount));
-            return List.of("Successfully deposited Rs " + amount);
+            return new CommandResponse(List.of("Successfully deposited Rs " + amount));
         } catch (AccountClosedException ex) {
-            return List.of("Account is closed, cannot make any transaction");
+            return new CommandResponse(List.of("Account is closed, cannot make any transaction"));
         }
     }
 }

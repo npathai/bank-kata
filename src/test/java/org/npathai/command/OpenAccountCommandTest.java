@@ -32,7 +32,7 @@ class OpenAccountCommandTest {
     public void returnsAccountNoOfNewlyOpenedAccount() {
         OpenAccountCommand openAccountCommand = new OpenAccountCommand(OPEN_ACCOUNT_COMMAND, accountService);
         when(accountService.createAccount(any(CreateAccountRequest.class))).thenReturn(ACCOUNT);
-        CommandResponse output = openAccountCommand.executeNew();
+        CommandResponse output = openAccountCommand.execute();
 
         verify(accountService).createAccount(any(CreateAccountRequest.class));
         assertThat(output.lines()).isEqualTo(List.of(ACCOUNT.accountNo()));

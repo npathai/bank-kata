@@ -15,10 +15,10 @@ public class BalanceCommand implements Command {
     }
 
     @Override
-    public List<String> execute() {
+    public CommandResponse execute() {
         String accountNo = balanceCommand.split(" ")[0];
         BalanceRequest balanceRequest = new BalanceRequest(accountNo);
         Long balance = accountService.getBalance(balanceRequest);
-        return List.of("Balance Rs " + balance);
+        return new CommandResponse(List.of("Balance Rs " + balance));
     }
 }

@@ -1,6 +1,5 @@
 package org.npathai.command;
 
-import org.npathai.command.Command;
 import org.npathai.domain.account.*;
 
 import java.util.Collections;
@@ -16,7 +15,7 @@ public class TransferCommand implements Command {
     }
 
     @Override
-    public List<String> execute() {
+    public CommandResponse execute() {
         String[] parts = command.split(" ");
         String fromAccountNo = parts[1];
         String toAccountNo = parts[2];
@@ -24,12 +23,12 @@ public class TransferCommand implements Command {
         try {
             accountService.transfer(new TransferRequest(fromAccountNo, toAccountNo, amount));
         } catch (TransferFailedException ex) {
-            return List.of("Payee account is closed. Amount will be reversed back to your account.");
+            return new CommandResponse(List.of("Payee account is closed. Amount will be reversed back to your account."));
         } catch (InsufficientFundsException ex) {
-            return List.of("Insufficient funds in account");
+            return new CommandResponse(List.of("Insufficient funds in account"));
         } catch (AccountUnderflowException ex) {
-            return List.of("Must maintain minimum balance of " + ex.minBalance());
+            return new CommandResponse(List.of("Must maintain minimum balance of " + ex.minBalance()));
         }
-        return Collections.emptyList();
+        return new CommandResponse(Collections.emptyList());
     }
 }
