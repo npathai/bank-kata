@@ -24,11 +24,11 @@ public class WithdrawCommand implements Command {
         int amount = Integer.parseInt(parts[2]);
         try {
             accountService.withdrawAccount(new WithdrawRequest(accountNo, amount));
-            return new CommandResponse(List.of("Successfully withdrawn Rs " + amount));
+            return CommandResponse.of(List.of("Successfully withdrawn Rs " + amount));
         } catch (AccountClosedException ex) {
-            return new CommandResponse(List.of("Account is closed, cannot make any transaction"));
+            return CommandResponse.of(List.of("Account is closed, cannot make any transaction"));
         } catch (AccountUnderflowException ex) {
-            return new CommandResponse(List.of("Must maintain minimum balance of " + ex.minBalance()));
+            return CommandResponse.of(List.of("Must maintain minimum balance of " + ex.minBalance()));
         }
     }
 }

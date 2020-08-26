@@ -10,8 +10,12 @@ public class CommandResponse {
         this(List.of(response));
     }
 
-    public CommandResponse(List<String> response) {
+    private CommandResponse(List<String> response) {
         this.response = response;
+    }
+
+    public static CommandResponse of(List<String> response) {
+        return new CommandResponse(response);
     }
 
     public boolean isEmpty() {

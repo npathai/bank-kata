@@ -38,7 +38,7 @@ public class ShowStatementCommand implements Command {
                     + "||" + transaction.amount()
                     + "||" + format(transaction.time()));
         }
-        return new CommandResponse(statement);
+        return CommandResponse.of(statement);
     }
 
     private String format(ZonedDateTime time) {

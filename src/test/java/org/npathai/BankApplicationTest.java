@@ -67,7 +67,7 @@ class BankApplicationTest {
     @Test
     public void writesTheOutputProducedByCommandToConsoleAsASingleLineSeparatedByNewLine() {
         given(mockConsole.readLine()).willReturn(COMMAND_1, QUIT);
-        given(commandExecutor.executeCommand(COMMAND_1)).willReturn(new CommandResponse(List.of("Output Value 1", "Output Value 2")));
+        given(commandExecutor.executeCommand(COMMAND_1)).willReturn(CommandResponse.of(List.of("Output Value 1", "Output Value 2")));
 
         bankApplication.start();
 
@@ -77,7 +77,7 @@ class BankApplicationTest {
     @Test
     public void doesNotWriteAnythingToConsoleWhenCommandDoesntReturnAnyOutput() {
         given(mockConsole.readLine()).willReturn(COMMAND_1, QUIT);
-        given(commandExecutor.executeCommand(COMMAND_1)).willReturn(new CommandResponse(Collections.emptyList()));
+        given(commandExecutor.executeCommand(COMMAND_1)).willReturn(CommandResponse.of(Collections.emptyList()));
 
         bankApplication.start();
 

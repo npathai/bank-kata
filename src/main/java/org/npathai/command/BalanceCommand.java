@@ -19,6 +19,6 @@ public class BalanceCommand implements Command {
         String accountNo = balanceCommand.split(" ")[0];
         BalanceRequest balanceRequest = new BalanceRequest(accountNo);
         Long balance = accountService.getBalance(balanceRequest);
-        return new CommandResponse(List.of("Balance Rs " + balance));
+        return CommandResponse.of(List.of("Balance Rs " + balance));
     }
 }

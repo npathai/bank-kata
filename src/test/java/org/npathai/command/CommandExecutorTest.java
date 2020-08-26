@@ -30,7 +30,7 @@ class CommandExecutorTest {
     public void executesAndReturnsResponseOfCommandWhenThereIsAMatchingOne() {
         Command command = Mockito.mock(Command.class);
         when(commandFactory.createCommand(COMMAND)).thenReturn(command);
-        when(command.execute()).thenReturn(new CommandResponse(List.of("Account created")));
+        when(command.execute()).thenReturn(CommandResponse.of(List.of("Account created")));
 
         CommandResponse expectedCommandResponse = new CommandResponse("Account created");
         assertThat(commandExecutor.executeCommand(COMMAND)).isEqualTo(expectedCommandResponse);
