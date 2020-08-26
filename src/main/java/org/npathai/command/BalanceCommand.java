@@ -2,8 +2,6 @@ package org.npathai.command;
 
 import org.npathai.domain.account.AccountService;
 
-import java.util.List;
-
 public class BalanceCommand implements Command {
 
     private final String balanceCommand;
@@ -19,6 +17,6 @@ public class BalanceCommand implements Command {
         String accountNo = balanceCommand.split(" ")[0];
         BalanceRequest balanceRequest = new BalanceRequest(accountNo);
         Long balance = accountService.getBalance(balanceRequest);
-        return CommandResponse.of(List.of("Balance Rs " + balance));
+        return CommandResponse.of("Balance Rs " + balance);
     }
 }

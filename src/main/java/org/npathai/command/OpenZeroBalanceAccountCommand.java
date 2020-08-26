@@ -21,6 +21,6 @@ public class OpenZeroBalanceAccountCommand implements Command {
         String[] parts = command.split(" ");
         String accountHolderName = parts[4];
         Account account = accountService.createAccount(new CreateAccountRequest(accountHolderName, true));
-        return CommandResponse.of(List.of(account.accountNo()));
+        return CommandResponse.of(account.accountNo());
     }
 }

@@ -19,6 +19,6 @@ public class CloseCommand implements Command {
         String[] parts = command.split(" ");
         String accountNo = parts[1];
         accountService.close(new CloseRequest(accountNo));
-        return CommandResponse.of(List.of("Account closed"));
+        return CommandResponse.of("Account closed");
     }
 }

@@ -18,6 +18,10 @@ public class CommandResponse {
         return new CommandResponse(response);
     }
 
+    public static CommandResponse of(String singleResponse) {
+        return new CommandResponse(List.of(singleResponse));
+    }
+
     public boolean isEmpty() {
         return response.isEmpty();
     }

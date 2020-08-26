@@ -23,11 +23,11 @@ public class TransferCommand implements Command {
         try {
             accountService.transfer(new TransferRequest(fromAccountNo, toAccountNo, amount));
         } catch (TransferFailedException ex) {
-            return CommandResponse.of(List.of("Payee account is closed. Amount will be reversed back to your account."));
+            return CommandResponse.of("Payee account is closed. Amount will be reversed back to your account.");
         } catch (InsufficientFundsException ex) {
-            return CommandResponse.of(List.of("Insufficient funds in account"));
+            return CommandResponse.of("Insufficient funds in account");
         } catch (AccountUnderflowException ex) {
-            return CommandResponse.of(List.of("Must maintain minimum balance of " + ex.minBalance()));
+            return CommandResponse.of("Must maintain minimum balance of " + ex.minBalance());
         }
         return CommandResponse.of(Collections.emptyList());
     }

@@ -5,7 +5,6 @@ import org.npathai.domain.account.AccountService;
 import org.npathai.domain.account.AccountUnderflowException;
 import org.npathai.domain.account.WithdrawRequest;
 
-import java.util.List;
 import java.util.Objects;
 
 public class WithdrawCommand implements Command {
@@ -24,11 +23,11 @@ public class WithdrawCommand implements Command {
         int amount = Integer.parseInt(parts[2]);
         try {
             accountService.withdrawAccount(new WithdrawRequest(accountNo, amount));
-            return CommandResponse.of(List.of("Successfully withdrawn Rs " + amount));
+            return CommandResponse.of("Successfully withdrawn Rs " + amount);
         } catch (AccountClosedException ex) {
-            return CommandResponse.of(List.of("Account is closed, cannot make any transaction"));
+            return CommandResponse.of("Account is closed, cannot make any transaction");
         } catch (AccountUnderflowException ex) {
-            return CommandResponse.of(List.of("Must maintain minimum balance of " + ex.minBalance()));
+            return CommandResponse.of("Must maintain minimum balance of " + ex.minBalance());
         }
     }
 }

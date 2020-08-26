@@ -23,9 +23,9 @@ public class DepositCommand implements Command {
         int amount = Integer.parseInt(parts[2]);
         try {
             accountService.depositAccount(new DepositRequest(accountNo, amount));
-            return CommandResponse.of(List.of("Successfully deposited Rs " + amount));
+            return CommandResponse.of("Successfully deposited Rs " + amount);
         } catch (AccountClosedException ex) {
-            return CommandResponse.of(List.of("Account is closed, cannot make any transaction"));
+            return CommandResponse.of("Account is closed, cannot make any transaction");
         }
     }
 }
