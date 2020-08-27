@@ -60,7 +60,8 @@ class TransferCommandTest {
 
     @Test
     public void returnsMessageWhenTransferFailsDueToInsufficientFunds() {
-        doThrow(InsufficientFundsException.class).when(accountService).transfer(any(TransferRequest.class));
+        TransferFailedException transferFailedException = new TransferFailedException(new InsufficientFundsException());
+        doThrow(transferFailedException).when(accountService).transfer(any(TransferRequest.class));
 
         transferCommand.execute();
 
@@ -69,8 +70,8 @@ class TransferCommandTest {
 
     @Test
     public void returnsMessageWhenTransferFailsDueToAccountUnderflows() {
-        AccountUnderflowException accountUnderflowException = new AccountUnderflowException(500);
-        doThrow(accountUnderflowException).when(accountService).transfer(any(TransferRequest.class));
+        TransferFailedException transferFailedException = new TransferFailedException(new AccountUnderflowException(500));
+        doThrow(transferFailedException).when(accountService).transfer(any(TransferRequest.class));
 
         transferCommand.execute();
 
