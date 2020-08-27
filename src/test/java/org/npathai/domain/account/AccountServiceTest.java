@@ -99,14 +99,26 @@ class AccountServiceTest {
         }
 
         @Test
-        public void throwsExceptionAndAddsReversalTransactionToSourceAccountWhenAmountCannotBeTransferredToDestinationAccount() {
+        public void throwsExceptionWhenAmountCannotBeTransferredToDestinationAccount() {
+            accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 2000));
+            TransferRequest transferRequest = new TransferRequest(sourceAccount.accountNo(),
+                    destinationAccount.accountNo(), 1000);
+            destinationAccount.close();
+
+            assertThatThrownBy(() -> accountService.transfer(transferRequest))
+                    .isInstanceOf(TransferFailedException.class)
+                    .hasCauseInstanceOf(AccountClosedException.class);
+        }
+
+        @Test
+        public void addsReversalTransactionToSourceAccountWhenAmountCannotBeTransferredToDestinationAccount() {
             accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 2000));
             destinationAccount.close();
             TransferRequest transferRequest = new TransferRequest(sourceAccount.accountNo(),
                     destinationAccount.accountNo(), 1000);
 
-            assertThatThrownBy(() -> accountService.transfer(transferRequest))
-                    .isInstanceOf(TransferFailedException.class);
+            assertThatThrownBy(() -> accountService.transfer(transferRequest));
+
             List<AccountTransaction> transactions = sourceAccount.transactions();
             assertThat(transactions.get(1)).isEqualTo(
                     new AccountTransaction(TransactionType.DEBIT, 1000, mutableClock.instant().atZone(ZoneId.systemDefault())));
