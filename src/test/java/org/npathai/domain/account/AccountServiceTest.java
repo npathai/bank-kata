@@ -127,7 +127,19 @@ class AccountServiceTest {
         }
 
         @Test
-        public void throwsInsufficientFundsExceptionWhenSourceAccountDoesNotHaveSufficientFunds() {
+        public void throwsExceptionWhenSourceAccountIsClosed() {
+            accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 2000));
+            TransferRequest transferRequest = new TransferRequest(sourceAccount.accountNo(),
+                    destinationAccount.accountNo(), 1000);
+            sourceAccount.close();
+
+            assertThatThrownBy(() -> accountService.transfer(transferRequest))
+                    .isInstanceOf(TransferFailedException.class)
+                    .hasCauseInstanceOf(AccountClosedException.class);
+        }
+
+        @Test
+        public void throwsExceptionWhenSourceAccountDoesNotHaveSufficientFunds() {
             accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 1000));
             accountService.withdrawAccount(new WithdrawRequest(sourceAccount.accountNo(), 100));
             accountService.depositAccount(new DepositRequest(sourceAccount.accountNo(), 500));
@@ -136,7 +148,8 @@ class AccountServiceTest {
                     destinationAccount.accountNo(), 1401);
 
             assertThatThrownBy(() -> accountService.transfer(transferRequest))
-                    .isInstanceOf(InsufficientFundsException.class);
+                    .isInstanceOf(TransferFailedException.class)
+                    .hasCauseInstanceOf(InsufficientFundsException.class);
         }
 
         @Test
@@ -145,8 +158,8 @@ class AccountServiceTest {
             TransferRequest transferRequest = new TransferRequest(sourceAccount.accountNo(),
                     destinationAccount.accountNo(), 1501);
             Throwable throwable = catchThrowable(() -> accountService.transfer(transferRequest));
-            assertThat(throwable).isInstanceOf(AccountUnderflowException.class);
-            assertThat(((AccountUnderflowException) throwable).minBalance()).isEqualTo(500);
+            assertThat(throwable).isInstanceOf(TransferFailedException.class);
+            assertThat(((AccountUnderflowException) throwable.getCause()).minBalance()).isEqualTo(500);
         }
     }
 

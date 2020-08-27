@@ -37,10 +37,15 @@ public class AccountService {
     public void transfer(TransferRequest transferRequest) throws InsufficientFundsException {
         Account fromAccount = accounts.get(transferRequest.fromAccountNo());
         Account toAccount = accounts.get(transferRequest.toAccountNo());
-        fromAccount.withdraw(transferRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
+        try {
+            fromAccount.withdraw(transferRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
+        } catch (AccountException ex) {
+            throw new TransferFailedException(ex);
+        }
+
         try {
             toAccount.deposit(transferRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
-        } catch (AccountClosedException ex) {
+        } catch (AccountException ex) {
             fromAccount.deposit(transferRequest.amount(), clock.instant().atZone(ZoneId.systemDefault()));
             throw new TransferFailedException(ex);
         }
