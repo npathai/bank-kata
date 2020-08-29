@@ -10,6 +10,7 @@ import org.npathai.command.BalanceRequest;
 
 import java.time.Duration;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -21,11 +22,13 @@ class AccountServiceTest {
     @Mock
     InMemoryAccounts accounts;
     MutableClock mutableClock = new MutableClock();
+    private ZonedDateTime currentDateTime;
 
     @BeforeEach
     public void initialize() {
         MockitoAnnotations.initMocks(this);
         accountService = new AccountService(accounts, mutableClock);
+        currentDateTime = mutableClock.instant().atZone(ZoneId.systemDefault());
     }
 
     @Test
@@ -202,8 +205,11 @@ class AccountServiceTest {
             accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 1000));
             mutableClock.advanceBy(Duration.ofDays(1));
             accountService.depositAccount(new DepositRequest(account.accountNo(), 3000));
+            accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 2000));
             mutableClock.advanceBy(Duration.ofDays(1));
             accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 100));
+            mutableClock.advanceBy(Duration.ofDays(1));
+            accountService.withdrawAccount(new WithdrawRequest(account.accountNo(), 1000));
         }
 
         @Test
@@ -213,9 +219,9 @@ class AccountServiceTest {
             List<AccountTransaction> statement = accountService.getStatement(showStatementRequest);
             assertThat(statement).isEqualTo(List.of(
                     new AccountTransaction(TransactionType.CREDIT, 3000,
-                            mutableClock.instant().minus(Duration.ofDays(1)).atZone(ZoneId.systemDefault())),
+                            currentDate().minusDays(2)),
                     new AccountTransaction(TransactionType.CREDIT, 2000,
-                            mutableClock.instant().minus(Duration.ofDays(3)).atZone(ZoneId.systemDefault()))));
+                            currentDate().minusDays(4))));
         }
 
         @Test
@@ -224,11 +230,27 @@ class AccountServiceTest {
             showStatementRequest.typeFilter("D");
             List<AccountTransaction> statement = accountService.getStatement(showStatementRequest);
             assertThat(statement).isEqualTo(List.of(
-                    new AccountTransaction(TransactionType.DEBIT, 100,
-                            mutableClock.instant().atZone(ZoneId.systemDefault())),
-                    new AccountTransaction(TransactionType.DEBIT, 1000,
-                            mutableClock.instant().minus(Duration.ofDays(2)).atZone(ZoneId.systemDefault())))
-            );
+                    new AccountTransaction(TransactionType.DEBIT, 1000, currentDate()),
+                    new AccountTransaction(TransactionType.DEBIT, 100, currentDate().minusDays(1)),
+                    new AccountTransaction(TransactionType.DEBIT, 2000, currentDate().minusDays(2)),
+                    new AccountTransaction(TransactionType.DEBIT, 1000, currentDate().minusDays(3))
+            ));
+        }
+
+        private ZonedDateTime currentDate() {
+            return mutableClock.instant().atZone(ZoneId.systemDefault());
+        }
+
+        @Test
+        public void returnsOnlyTransactionsOnOrWithinTheDateFilterRange() {
+            AccountTransaction depositTransaction1 = new AccountTransaction(TransactionType.CREDIT, 1000, currentDateTime);
+            AccountTransaction withdrawalTransaction1 = new AccountTransaction(TransactionType.DEBIT, 1000, currentDateTime);
+            AccountTransaction depositTransaction2 = new AccountTransaction(TransactionType.CREDIT, 2000, currentDateTime.minusDays(1));
+            AccountTransaction withdrawalTransaction2 = new AccountTransaction(TransactionType.DEBIT, 2000, currentDateTime.minusDays(1));
+            AccountTransaction depositTransaction3 = new AccountTransaction(TransactionType.CREDIT, 3000, currentDateTime.minusDays(2));
+            AccountTransaction depositTransaction4 = new AccountTransaction(TransactionType.DEBIT, 1000, currentDateTime.minusDays(3));
+
+
         }
     }
 
