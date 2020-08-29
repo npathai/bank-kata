@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.from;
 
 public class StatementStepDefs {
     private final Fixture application;
@@ -71,6 +72,8 @@ public class StatementStepDefs {
 
     @When("{string} opens account statement filtered by date from {string} to {string}")
     public void opensAccountStatementFilteredByDateFromTo(String accountHolderName, String fromDate, String toDate) {
-
+        application.willReceive(accountHolder.getAccountNoByName(accountHolderName) + " statement --date "
+                + fromDate + " " + toDate);
+        statement = allTransactions(application.readOutput());
     }
 }
