@@ -21,6 +21,10 @@ public class ShowStatementCommand implements Command {
         this.accountService = Objects.requireNonNull(accountService);
     }
 
+    private String format(ZonedDateTime time) {
+        return time.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
     @Override
     public CommandResponse execute() {
         String[] parts = command.split(" ");
@@ -30,6 +34,13 @@ public class ShowStatementCommand implements Command {
             String typeFilter = parts[3];
             showStatementRequest.typeFilter(typeFilter);
         }
+        if (command.contains(" --date")) {
+            String fromDate = parts[3];
+            String toDate = parts[4];
+            showStatementRequest.fromDate(fromDate);
+            showStatementRequest.toDate(toDate);
+        }
+
         List<AccountTransaction> transactions = accountService.getStatement(showStatementRequest);
         List<String> statement = new ArrayList<>();
         statement.add("type||amount||date");
@@ -39,9 +50,5 @@ public class ShowStatementCommand implements Command {
                     + "||" + format(transaction.time()));
         }
         return CommandResponse.of(statement);
-    }
-
-    private String format(ZonedDateTime time) {
-        return time.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 }

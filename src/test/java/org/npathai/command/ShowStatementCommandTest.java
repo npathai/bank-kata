@@ -39,7 +39,11 @@ class ShowStatementCommandTest {
         MockitoAnnotations.initMocks(this);
         showStatementCommand = new ShowStatementCommand(SHOW_STATEMENT_COMMAND, accountService);
         currentDateTime = mutableClock.instant().atZone(ZoneId.systemDefault());
-        currentDate = currentDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        currentDate = formatted(currentDateTime);
+    }
+
+    private String formatted(ZonedDateTime currentDateTime) {
+        return currentDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
     @Test
@@ -90,5 +94,28 @@ class ShowStatementCommandTest {
                 "type||amount||date",
                 "C||1000||" + currentDate,
                 "C||2000||" + currentDate));
+    }
+
+    @Test
+    public void showsFilteredStatementsWithinDateRange() {
+        String currentDateMinusThreeDays = formatted(currentDateTime.minusDays(3));
+        String currentDateMinusOneDay = formatted(currentDateTime.minusDays(1));
+        String commandWithDateFilter = ACCOUNT.accountNo() + " statement --date "+ currentDateMinusThreeDays + " " + currentDateMinusOneDay;
+        showStatementCommand = new ShowStatementCommand(commandWithDateFilter, accountService);
+        AccountTransaction depositTransaction1 = new AccountTransaction(TransactionType.CREDIT, 1000, currentDateTime);
+        AccountTransaction withdrawalTransaction1 = new AccountTransaction(TransactionType.DEBIT, 1000, currentDateTime);
+        AccountTransaction depositTransaction2 = new AccountTransaction(TransactionType.CREDIT, 2000, currentDateTime.minusDays(1));
+        AccountTransaction withdrawalTransaction2 = new AccountTransaction(TransactionType.DEBIT, 2000, currentDateTime.minusDays(1));
+        AccountTransaction depositTransaction3 = new AccountTransaction(TransactionType.CREDIT, 3000, currentDateTime.minusDays(2));
+        AccountTransaction depositTransaction4 = new AccountTransaction(TransactionType.DEBIT, 1000, currentDateTime.minusDays(3));
+
+        when(accountService.getStatement(any(ShowStatementRequest.class))).thenReturn(List.of(depositTransaction2,
+                depositTransaction3));
+
+        showStatementCommand.execute();
+        verify(accountService).getStatement(requestArgumentCaptor.capture());
+        ShowStatementRequest request = requestArgumentCaptor.getValue();
+        assertThat(request.fromDate()).isEqualTo(currentDateMinusThreeDays);
+        assertThat(request.toDate()).isEqualTo(currentDateMinusOneDay);
     }
 }
