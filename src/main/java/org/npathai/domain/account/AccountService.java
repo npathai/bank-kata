@@ -2,8 +2,8 @@ package org.npathai.domain.account;
 
 import org.npathai.command.BalanceRequest;
 
-import java.time.Clock;
-import java.time.ZoneId;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -53,11 +53,37 @@ public class AccountService {
 
     public List<AccountTransaction> getStatement(ShowStatementRequest showStatementRequest) {
         Predicate<AccountTransaction> typeFilter = typeFilterFrom(showStatementRequest);
+        Predicate<AccountTransaction> dateFilter = dateFilterFrom(showStatementRequest);
         return accounts.get(showStatementRequest.accountNo()).transactions()
                 .stream()
                 .filter(typeFilter)
+                .filter(dateFilter)
                 .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
+    }
+
+    private Predicate<AccountTransaction> dateFilterFrom(ShowStatementRequest showStatementRequest) {
+        if (showStatementRequest.fromDate() == null) {
+            return type -> true;
+        }
+
+        ZonedDateTime fromDate = LocalDate.parse(showStatementRequest.fromDate(),
+                DateTimeFormatter.ofPattern("dd/MM/yyyy")).atTime(0, 0, 0)
+                .atZone(ZoneId.systemDefault());
+        ZonedDateTime toDate = LocalDate.parse(showStatementRequest.toDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                .atTime(0, 0, 0)
+                .atZone(ZoneId.systemDefault());
+
+        return transaction -> {
+            ZonedDateTime transactionDate = transaction.time().withHour(0).withMinute(0).withSecond(0).withNano(0);
+            if (transactionDate.isEqual(fromDate)) {
+                return true;
+            }
+            if (transactionDate.isAfter(fromDate) && transaction.time().isBefore(toDate)) {
+                return true;
+            }
+            return transactionDate.isEqual(toDate);
+        };
     }
 
     private Predicate<AccountTransaction> typeFilterFrom(ShowStatementRequest showStatementRequest) {

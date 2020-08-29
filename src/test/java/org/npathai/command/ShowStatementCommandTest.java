@@ -39,10 +39,10 @@ class ShowStatementCommandTest {
         MockitoAnnotations.initMocks(this);
         showStatementCommand = new ShowStatementCommand(SHOW_STATEMENT_COMMAND, accountService);
         currentDateTime = mutableClock.instant().atZone(ZoneId.systemDefault());
-        currentDate = formatted(currentDateTime);
+        currentDate = format(currentDateTime);
     }
 
-    private String formatted(ZonedDateTime currentDateTime) {
+    private String format(ZonedDateTime currentDateTime) {
         return currentDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
@@ -98,8 +98,8 @@ class ShowStatementCommandTest {
 
     @Test
     public void showsFilteredStatementsWithinDateRange() {
-        String currentDateMinusThreeDays = formatted(currentDateTime.minusDays(3));
-        String currentDateMinusOneDay = formatted(currentDateTime.minusDays(1));
+        String currentDateMinusThreeDays = format(currentDateTime.minusDays(3));
+        String currentDateMinusOneDay = format(currentDateTime.minusDays(1));
         String commandWithDateFilter = ACCOUNT.accountNo() + " statement --date "+ currentDateMinusThreeDays + " " + currentDateMinusOneDay;
         showStatementCommand = new ShowStatementCommand(commandWithDateFilter, accountService);
         AccountTransaction depositTransaction2 = new AccountTransaction(TransactionType.CREDIT, 2000, currentDateTime.minusDays(1));
