@@ -20,23 +20,29 @@ public class Account {
     }
 
     public void deposit(long amount, ZonedDateTime time) {
-        if (closed) {
-            throw new AccountClosedException();
-        }
+        checkState();
         transactionList.add(new AccountTransaction(TransactionType.CREDIT, amount, time));
     }
 
-    public void withdraw(int amount, ZonedDateTime time) {
+    private void checkState() {
         if (closed) {
             throw new AccountClosedException();
         }
+    }
+
+    public void withdraw(int amount, ZonedDateTime time) {
+        checkState();
+        checkConstraints(amount);
+        transactionList.add(new AccountTransaction(TransactionType.DEBIT, amount, time));
+    }
+
+    private void checkConstraints(int amount) {
         if (balance() < amount) {
             throw new InsufficientFundsException();
         }
         if (balance() - amount < minBalance) {
             throw new AccountUnderflowException(MIN_BALANCE);
         }
-        transactionList.add(new AccountTransaction(TransactionType.DEBIT, amount, time));
     }
 
     public long balance() {
