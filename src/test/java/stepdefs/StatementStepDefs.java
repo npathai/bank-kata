@@ -68,4 +68,9 @@ public class StatementStepDefs {
                 .collect(Collectors.joining(System.lineSeparator()));
         return statement;
     }
+
+    @When("{string} opens account statement filtered by date from {string} to {string}")
+    public void opensAccountStatementFilteredByDateFromTo(String accountHolderName, String fromDate, String toDate) {
+
+    }
 }

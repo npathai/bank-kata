@@ -8,10 +8,10 @@ import java.util.UUID;
 public class Account {
     public static final int MIN_BALANCE = 500;
 
-    private String accountNo = UUID.randomUUID().toString();
+    private final String accountNo = UUID.randomUUID().toString();
     private final String accountHolderName;
     private final int minBalance;
-    private List<AccountTransaction> transactionList = new ArrayList<>();
+    private final List<AccountTransaction> transactionList = new ArrayList<>();
     private boolean closed;
 
     public Account(String accountHolderName, int minBalance) {
